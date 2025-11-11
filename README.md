@@ -1,3 +1,14 @@
+<p>
+  <b>Languages:</b>
+  <a href="README.md">English</a>
+  · <a href="i18n/README.zh-Hans.md">中文 (简体)</a>
+  · <a href="i18n/README.zh-Hant.md">中文（繁體）</a>
+  · <a href="i18n/README.ja.md">日本語</a>
+  · <a href="i18n/README.ko.md">한국어</a>
+  · <a href="i18n/README.vi.md">Tiếng Việt</a>
+  · <a href="i18n/README.es.md">Español</a>
+</p>
+
 # IdeasRobot
 
 IdeasRobot is a laid-back mic‑and‑camera console inspired by *The Art of Lazying* and *OnlyIdeas*: a Tornado backend that talks to the Wheeltec M2 microphone array (or its simulator) plus an installable PWA/Android/iOS UI that streams waveform energy, wake-angle telemetry, and handles one-tap recordings from anywhere.
