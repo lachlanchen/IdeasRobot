@@ -49,6 +49,12 @@ footer {
   padding: 24px clamp(24px, 6vw, 80px);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -94,6 +100,56 @@ nav a.github {
   padding: 10px 18px;
   border-radius: 999px;
   border: 1px solid var(--line);
+}
+
+.lang-switcher {
+  position: relative;
+}
+
+.lang-switcher button {
+  border: 1px solid var(--line);
+  background: rgba(7, 10, 18, 0.8);
+  border-radius: 999px;
+  color: var(--text);
+  padding: 8px 18px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.lang-switcher ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 8px 0;
+  position: absolute;
+  right: 0;
+  min-width: 200px;
+  background: rgba(7, 10, 18, 0.95);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(3, 6, 15, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 3;
+}
+
+.lang-switcher.open ul {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.lang-switcher ul li {
+  padding: 10px 16px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.lang-switcher ul li:hover,
+.lang-switcher ul li.active {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .hero {
@@ -387,9 +443,39 @@ footer a {
   margin-left: 16px;
 }
 
+html[dir="rtl"] body {
+  direction: rtl;
+}
+
+html[dir="rtl"] .site-header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+html[dir="rtl"] nav {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+html[dir="rtl"] .header-actions {
+  width: 100%;
+  justify-content: space-between;
+}
+
+html[dir="rtl"] .hero-meta div,
+html[dir="rtl"] .section-heading p,
+html[dir="rtl"] p {
+  text-align: start;
+}
+
 @media (max-width: 640px) {
   nav {
     display: none;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
   }
   .hero {
     padding-top: 0;

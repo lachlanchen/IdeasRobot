@@ -18,17 +18,33 @@
         <div class="logo-mark">IR</div>
         <div>
           <p class="logo-title">IdeasRobot</p>
-          <p class="logo-tagline">The Art of Lazying · OnlyIdeas</p>
+          <p class="logo-tagline" data-i18n="logo_tagline">The Art of Lazying · OnlyIdeas</p>
         </div>
       </div>
-      <nav>
-        <a href="#features">Features</a>
-        <a href="#stack">Stack</a>
-        <a href="#cta">Launch</a>
-        <a class="github" href="https://github.com/lachlanchen/IdeasRobot" target="_blank" rel="noreferrer">
-          GitHub
-        </a>
-      </nav>
+      <div class="header-actions">
+        <nav>
+          <a href="#features" data-i18n="nav_features">Features</a>
+          <a href="#stack" data-i18n="nav_stack">Stack</a>
+          <a href="#cta" data-i18n="nav_launch">Launch</a>
+          <a class="github" href="https://github.com/lachlanchen/IdeasRobot" target="_blank" rel="noreferrer" data-i18n="nav_github">
+            GitHub
+          </a>
+        </nav>
+        <div class="lang-switcher">
+          <button id="langButton" aria-haspopup="true" aria-expanded="false">English ▾</button>
+          <ul id="langMenu" aria-label="Select language">
+            <li data-lang="en">English</li>
+            <li data-lang="zh-Hans">中文 (简体)</li>
+            <li data-lang="zh-Hant">中文（繁體）</li>
+            <li data-lang="ja">日本語</li>
+            <li data-lang="ko">한국어</li>
+            <li data-lang="vi">Tiếng Việt</li>
+            <li data-lang="es">Español</li>
+            <li data-lang="fr">Français</li>
+            <li data-lang="ar">العربية</li>
+          </ul>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -81,36 +97,36 @@
 
       <section id="features" class="section features">
         <div class="section-heading">
-          <p class="eyebrow">Why IdeasRobot</p>
-          <h2>Built for sensory calm, not grind.</h2>
-          <p>
+          <p class="eyebrow" data-i18n="features_eyebrow">Why IdeasRobot</p>
+          <h2 data-i18n="features_title">Built for sensory calm, not grind.</h2>
+          <p data-i18n="features_desc">
             A robot console that respects your time: minimal setup, generous visuals, and automation hooks
             for OnlyIdeas workflows.
           </p>
         </div>
         <div class="grid">
           <article>
-            <h3>WebSocket control loop</h3>
-            <p>
+            <h3 data-i18n="feature1_title">WebSocket control loop</h3>
+            <p data-i18n="feature1_body">
               `/ws/stream` pushes waveform energy, silence/speaking state, and wake metadata with < 80 ms latency.
               Toggle recordings via REST or WebSocket commands.
             </p>
           </article>
           <article>
-            <h3>Hardware-native adapters</h3>
-            <p>
+            <h3 data-i18n="feature2_title">Hardware-native adapters</h3>
+            <p data-i18n="feature2_body">
               ALSA capture via `sounddevice`, serial parsing for CH9102-based UART frames, and simulator flags for development without M2 hardware.
             </p>
           </article>
           <article>
-            <h3>Robot-friendly API surface</h3>
-            <p>
+            <h3 data-i18n="feature3_title">Robot-friendly API surface</h3>
+            <p data-i18n="feature3_body">
               Ready for ROS bridges, OnlyIdeas workflows, or camera triggers—stream direction events to MQTT, databases, or edge ML pipelines.
             </p>
           </article>
           <article>
-            <h3>Install once, monitor forever</h3>
-            <p>
+            <h3 data-i18n="feature4_title">Install once, monitor forever</h3>
+            <p data-i18n="feature4_body">
               The PWA ships service worker caching, offline splash, and home-screen icons so your phone or tablet becomes a dedicated IdeasRobot display.
             </p>
           </article>
@@ -119,13 +135,13 @@
 
       <section id="stack" class="section stack">
         <div class="stack-card">
-          <h2>Stack overview</h2>
+          <h2 data-i18n="stack_title">Stack overview</h2>
           <ul>
-            <li><strong>Tornado backend</strong> — REST + WebSocket fan-out, WAV archiving, status endpoints.</li>
-            <li><strong>Audio adapters</strong> — PCM16 chunks via ALSA or simulator, saved into `recordings/`.</li>
-            <li><strong>Direction reader</strong> — Mirrors vendor 0xA5 protocol to broadcast wake angles.</li>
-            <li><strong>PWA front-end</strong> — Neon waveform grid, compass, install prompts, service worker.</li>
-            <li><strong>Docs bundle</strong> — Architecture + SDK notes for Linux/Raspberry Pi bring-up.</li>
+            <li data-i18n-html="stack_item1"><strong>Tornado backend</strong> — REST + WebSocket fan-out, WAV archiving, status endpoints.</li>
+            <li data-i18n-html="stack_item2"><strong>Audio adapters</strong> — PCM16 chunks via ALSA or simulator, saved into `recordings/`.</li>
+            <li data-i18n-html="stack_item3"><strong>Direction reader</strong> — Mirrors vendor 0xA5 protocol to broadcast wake angles.</li>
+            <li data-i18n-html="stack_item4"><strong>PWA front-end</strong> — Neon waveform grid, compass, install prompts, service worker.</li>
+            <li data-i18n-html="stack_item5"><strong>Docs bundle</strong> — Architecture + SDK notes for Linux/Raspberry Pi bring-up.</li>
           </ul>
           <pre><code>$ MIC_ARRAY_SERIAL=/dev/wheeltec_mic \ 
 MIC_ARRAY_AUDIO_DEVICE="hw:1,0" \
@@ -133,21 +149,21 @@ python -m mic_array_dashboard.backend.server
 </code></pre>
         </div>
         <div class="stack-card highlights">
-          <h3>Ready for robot.lazying.art</h3>
-          <p>
-            Host `website/` on GitHub Pages or your own CDN, point `robot.lazying.art` at the Pages distribution,
+          <h3 data-i18n="stack_highlight_title">Ready for robot.lazying.art</h3>
+          <p data-i18n="stack_highlight_body">
+            Host `docs/` on GitHub Pages or your own CDN, point `robot.lazying.art` at the Pages distribution,
             and forward `/` to the live Tornado instance.
           </p>
           <div class="timeline">
-            <div>
+            <div data-i18n-html="timeline_step1">
               <span>1</span>
-              Configure Pages to serve <code>/website</code> branch/folder.
+              Configure Pages to serve <code>/docs</code> branch/folder.
             </div>
-            <div>
+            <div data-i18n-html="timeline_step2">
               <span>2</span>
               Set <code>CNAME</code> file to <code>robot.lazying.art</code>.
             </div>
-            <div>
+            <div data-i18n-html="timeline_step3">
               <span>3</span>
               Proxy console origin (<code>https://robot.lazying.art/app</code>) to your Tornado host.
             </div>
@@ -156,19 +172,19 @@ python -m mic_array_dashboard.backend.server
       </section>
 
       <section class="section gallery">
-        <h2>A gentle robot operations cockpit.</h2>
+        <h2 data-i18n="gallery_title">A gentle robot operations cockpit.</h2>
         <div class="gallery-grid">
           <div class="card">
-            <h4>Waveform</h4>
-            <p>Neon bars with silence/speaking pill and latency badge.</p>
+            <h4 data-i18n="gallery_card1_title">Waveform</h4>
+            <p data-i18n="gallery_card1_body">Neon bars with silence/speaking pill and latency badge.</p>
           </div>
           <div class="card">
-            <h4>Direction compass</h4>
-            <p>Animated arrow locks onto the wake angle, ideal for beam-steering demos.</p>
+            <h4 data-i18n="gallery_card2_title">Direction compass</h4>
+            <p data-i18n="gallery_card2_body">Animated arrow locks onto the wake angle, ideal for beam-steering demos.</p>
           </div>
           <div class="card">
-            <h4>Recording shelf</h4>
-            <p>One-tap start/stop with downloadable WAV artifacts synced to your robot logs.</p>
+            <h4 data-i18n="gallery_card3_title">Recording shelf</h4>
+            <p data-i18n="gallery_card3_body">One-tap start/stop with downloadable WAV artifacts synced to your robot logs.</p>
           </div>
         </div>
       </section>
@@ -176,18 +192,18 @@ python -m mic_array_dashboard.backend.server
       <section id="cta" class="section cta">
         <div class="cta-card">
           <div>
-            <p class="eyebrow">Only Ideas · Less grind</p>
-            <h2>Deploy IdeasRobot, relax the Ops.</h2>
-            <p>
+            <p class="eyebrow" data-i18n="cta_eyebrow">Only Ideas · Less grind</p>
+            <h2 data-i18n="cta_title">Deploy IdeasRobot, relax the Ops.</h2>
+            <p data-i18n="cta_body">
               Whether you’re running a Raspberry Pi in a workshop or a fleet of home robots, IdeasRobot keeps
               the sensory stack elegant. Build on it, remix it, or sponsor its future.
             </p>
           </div>
           <div class="cta-actions">
-            <a class="btn primary" href="https://github.com/lachlanchen/IdeasRobot" target="_blank" rel="noreferrer">
+            <a class="btn primary" href="https://github.com/lachlanchen/IdeasRobot" target="_blank" rel="noreferrer" data-i18n="cta_btn_primary">
               Clone on GitHub
             </a>
-            <a class="btn ghost" href="https://chat.lazying.art/donate" target="_blank" rel="noreferrer">
+            <a class="btn ghost" href="https://chat.lazying.art/donate" target="_blank" rel="noreferrer" data-i18n="cta_btn_secondary">
               Donate
             </a>
           </div>
@@ -196,11 +212,11 @@ python -m mic_array_dashboard.backend.server
     </main>
 
     <footer>
-      <p>© <span id="year"></span> IdeasRobot · The Art of Lazying</p>
+      <p data-i18n-html="footer_text">© <span id="year"></span> IdeasRobot · The Art of Lazying</p>
       <div>
-        <a href="https://github.com/lachlanchen" target="_blank" rel="noreferrer">GitHub</a>
-        <a href="https://lazying.art" target="_blank" rel="noreferrer">Lazying.art</a>
-        <a href="https://chat.lazying.art/donate" target="_blank" rel="noreferrer">Donate</a>
+        <a href="https://github.com/lachlanchen" target="_blank" rel="noreferrer" data-i18n="footer_link_github">GitHub</a>
+        <a href="https://lazying.art" target="_blank" rel="noreferrer" data-i18n="footer_link_site">Lazying.art</a>
+        <a href="https://chat.lazying.art/donate" target="_blank" rel="noreferrer" data-i18n="footer_link_donate">Donate</a>
       </div>
     </footer>
   </body>
