@@ -7,6 +7,8 @@
   · <a href="i18n/README.ko.md">한국어</a>
   · <a href="i18n/README.vi.md">Tiếng Việt</a>
   · <a href="i18n/README.es.md">Español</a>
+  · <a href="i18n/README.fr.md">Français</a>
+  · <a href="i18n/README.ar.md">العربية</a>
 </p>
 
 # IdeasRobot
