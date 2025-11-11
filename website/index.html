@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#05060c" />
+    <title>IdeasRobot — Listen, See, Share</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <div class="stars" aria-hidden="true"></div>
+    <header class="site-header">
+      <div class="logo">
+        <div class="logo-mark">IR</div>
+        <div>
+          <p class="logo-title">IdeasRobot</p>
+          <p class="logo-tagline">The Art of Lazying · OnlyIdeas</p>
+        </div>
+      </div>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#stack">Stack</a>
+        <a href="#cta">Launch</a>
+        <a class="github" href="https://github.com/lachlanchen/IdeasRobot" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-text">
+          <p class="eyebrow">robot.lazying.art</p>
+          <h1>Listen, see, and steer your mic array from anywhere.</h1>
+          <p>
+            IdeasRobot pairs a Tornado control plane with an installable PWA that streams neon waveforms,
+            wake angles, and recordings from the Wheeltec M2 array. Built for lazy automation fans who
+            want insight without ceremony.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="https://robot.lazying.art" target="_blank" rel="noreferrer">
+              Launch Console
+            </a>
+            <a class="btn ghost" href="https://github.com/lachlanchen/IdeasRobot" target="_blank" rel="noreferrer">
+              View Source
+            </a>
+          </div>
+          <div class="hero-meta">
+            <div>
+              <span>72-bar</span>
+              Waveform grid inspired by IdeasGlass
+            </div>
+            <div>
+              <span>Installable</span>
+              PWA for Android/iOS/Desktop
+            </div>
+            <div>
+              <span>Edge-ready</span>
+              ALSA + serial parsers for Raspberry Pi
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="radar">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+            <div class="needle"></div>
+          </div>
+          <div class="device-card">
+            <p class="device-label">Wake angle</p>
+            <p class="device-value"><span id="angleValue">128°</span> · SPEAKING</p>
+            <div class="wave-preview" id="wavePreview"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section features">
+        <div class="section-heading">
+          <p class="eyebrow">Why IdeasRobot</p>
+          <h2>Built for sensory calm, not grind.</h2>
+          <p>
+            A robot console that respects your time: minimal setup, generous visuals, and automation hooks
+            for OnlyIdeas workflows.
+          </p>
+        </div>
+        <div class="grid">
+          <article>
+            <h3>WebSocket control loop</h3>
+            <p>
+              `/ws/stream` pushes waveform energy, silence/speaking state, and wake metadata with < 80 ms latency.
+              Toggle recordings via REST or WebSocket commands.
+            </p>
+          </article>
+          <article>
+            <h3>Hardware-native adapters</h3>
+            <p>
+              ALSA capture via `sounddevice`, serial parsing for CH9102-based UART frames, and simulator flags for development without M2 hardware.
+            </p>
+          </article>
+          <article>
+            <h3>Robot-friendly API surface</h3>
+            <p>
+              Ready for ROS bridges, OnlyIdeas workflows, or camera triggers—stream direction events to MQTT, databases, or edge ML pipelines.
+            </p>
+          </article>
+          <article>
+            <h3>Install once, monitor forever</h3>
+            <p>
+              The PWA ships service worker caching, offline splash, and home-screen icons so your phone or tablet becomes a dedicated IdeasRobot display.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="stack" class="section stack">
+        <div class="stack-card">
+          <h2>Stack overview</h2>
+          <ul>
+            <li><strong>Tornado backend</strong> — REST + WebSocket fan-out, WAV archiving, status endpoints.</li>
+            <li><strong>Audio adapters</strong> — PCM16 chunks via ALSA or simulator, saved into `recordings/`.</li>
+            <li><strong>Direction reader</strong> — Mirrors vendor 0xA5 protocol to broadcast wake angles.</li>
+            <li><strong>PWA front-end</strong> — Neon waveform grid, compass, install prompts, service worker.</li>
+            <li><strong>Docs bundle</strong> — Architecture + SDK notes for Linux/Raspberry Pi bring-up.</li>
+          </ul>
+          <pre><code>$ MIC_ARRAY_SERIAL=/dev/wheeltec_mic \ 
+MIC_ARRAY_AUDIO_DEVICE="hw:1,0" \
+python -m mic_array_dashboard.backend.server
+</code></pre>
+        </div>
+        <div class="stack-card highlights">
+          <h3>Ready for robot.lazying.art</h3>
+          <p>
+            Host `website/` on GitHub Pages or your own CDN, point `robot.lazying.art` at the Pages distribution,
+            and forward `/` to the live Tornado instance.
+          </p>
+          <div class="timeline">
+            <div>
+              <span>1</span>
+              Configure Pages to serve <code>/website</code> branch/folder.
+            </div>
+            <div>
+              <span>2</span>
+              Set <code>CNAME</code> file to <code>robot.lazying.art</code>.
+            </div>
+            <div>
+              <span>3</span>
+              Proxy console origin (<code>https://robot.lazying.art/app</code>) to your Tornado host.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section gallery">
+        <h2>A gentle robot operations cockpit.</h2>
+        <div class="gallery-grid">
+          <div class="card">
+            <h4>Waveform</h4>
+            <p>Neon bars with silence/speaking pill and latency badge.</p>
+          </div>
+          <div class="card">
+            <h4>Direction compass</h4>
+            <p>Animated arrow locks onto the wake angle, ideal for beam-steering demos.</p>
+          </div>
+          <div class="card">
+            <h4>Recording shelf</h4>
+            <p>One-tap start/stop with downloadable WAV artifacts synced to your robot logs.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="cta" class="section cta">
+        <div class="cta-card">
+          <div>
+            <p class="eyebrow">Only Ideas · Less grind</p>
+            <h2>Deploy IdeasRobot, relax the Ops.</h2>
+            <p>
+              Whether you’re running a Raspberry Pi in a workshop or a fleet of home robots, IdeasRobot keeps
+              the sensory stack elegant. Build on it, remix it, or sponsor its future.
+            </p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn primary" href="https://github.com/lachlanchen/IdeasRobot" target="_blank" rel="noreferrer">
+              Clone on GitHub
+            </a>
+            <a class="btn ghost" href="https://chat.lazying.art/donate" target="_blank" rel="noreferrer">
+              Donate
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© <span id="year"></span> IdeasRobot · The Art of Lazying</p>
+      <div>
+        <a href="https://github.com/lachlanchen" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://lazying.art" target="_blank" rel="noreferrer">Lazying.art</a>
+        <a href="https://chat.lazying.art/donate" target="_blank" rel="noreferrer">Donate</a>
+      </div>
+    </footer>
+  </body>
+</html>
