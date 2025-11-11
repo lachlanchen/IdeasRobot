@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#05070d" />
+    <meta name="ws-path" content="/ws/stream" />
+    <title>Mic Array Console</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>Mic Array Console</h1>
+        <p>Monitor WheelTec M2 audio levels, wake direction, and recordings.</p>
+      </div>
+      <button id="installBtn" class="ghost-btn" hidden>Install App</button>
+    </header>
+
+    <main>
+      <section class="card controls">
+        <div>
+          <h2>Recorder</h2>
+          <p id="recorderStatus">Device idle</p>
+        </div>
+        <button id="recordBtn" class="primary">Start Recording</button>
+      </section>
+
+      <section class="card waveform-card">
+        <div class="waveform" id="waveform">
+          <div class="state-pill" id="statePill">SILENCE</div>
+          <div class="waveform-bars" id="waveformBars"></div>
+        </div>
+        <div class="meta">
+          <span id="levelReadout">Level: 0%</span>
+          <span id="lagReadout">Link: +0 ms</span>
+        </div>
+      </section>
+
+      <section class="card direction-card">
+        <div class="compass" id="compass">
+          <div class="compass-axis"></div>
+          <div class="compass-axis vertical"></div>
+          <div class="compass-arrow" id="compassArrow"></div>
+          <div class="compass-center"></div>
+        </div>
+        <div class="direction-details" id="directionDetails">
+          Waiting for wake-word...
+        </div>
+      </section>
+
+      <section class="card recordings-card">
+        <h2>Last Recording</h2>
+        <p id="recordingMeta">No sessions yet.</p>
+        <a id="downloadLink" class="ghost-btn" href="#" download hidden>Download WAV</a>
+      </section>
+    </main>
+
+    <footer>
+      <a href="/manifest.json">PWA Manifest</a>
+      <a href="https://doc.xfyun.cn/" target="_blank" rel="noreferrer">iFlyTek Docs</a>
+    </footer>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
