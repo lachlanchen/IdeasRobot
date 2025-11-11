@@ -23,6 +23,7 @@ See `AGENTS.md` for contributor guidelines.
 ## Documentation
 
 - [Architecture overview](docs/ARCHITECTURE.md) – backend adapters, message formats, and frontend flow.
+- [Wheetlec SDK deep notes](docs/SDK_NOTES.md) – building the vendor demos on Linux/Raspberry Pi and driving them from Python.
 
 ## Quick start
 
