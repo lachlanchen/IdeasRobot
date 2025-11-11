@@ -20,6 +20,10 @@ mic_array_dashboard/
 
 See `AGENTS.md` for contributor guidelines.
 
+## Documentation
+
+- [Architecture overview](docs/ARCHITECTURE.md) – backend adapters, message formats, and frontend flow.
+
 ## Quick start
 
 ```bash
