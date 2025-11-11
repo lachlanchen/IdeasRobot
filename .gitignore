@@ -1,2 +1,8 @@
 # Ignore bundled M2 reference material (binary docs, SDK zips, etc.)
 M2系列麦克风语音阵列客户资料/
+raspberrypi_legacy/
+memo.txt
+
+# macOS metadata
+.DS_Store
+._*
