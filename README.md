@@ -35,12 +35,12 @@ See `AGENTS.md` for contributor guidelines.
 
 ## Documentation
 
-- [Architecture overview](docs/ARCHITECTURE.md) – backend adapters, message formats, and frontend flow.
-- [Wheetlec SDK deep notes](docs/SDK_NOTES.md) – building the vendor demos on Linux/Raspberry Pi and driving them from Python.
+- [Architecture overview](references/ARCHITECTURE.md) – backend adapters, message formats, and frontend flow.
+- [Wheetlec SDK deep notes](references/SDK_NOTES.md) – building the vendor demos on Linux/Raspberry Pi and driving them from Python.
 
 ## Website
 
-- Static landing lives under `website/` (HTML/CSS/JS). Point GitHub Pages at that folder and add a `CNAME` file with `robot.lazying.art` to serve the marketing site alongside the console.
+- Static landing lives under `docs/` (HTML/CSS/JS). Configure GitHub Pages to serve the `/docs` folder on `main` and keep `docs/CNAME` as `robot.lazying.art`.
 
 ## Quick start
 

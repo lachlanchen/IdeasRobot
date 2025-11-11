@@ -33,8 +33,8 @@ Hướng dẫn đóng góp nằm tại `AGENTS.md`.
 
 ## Tài liệu
 
-- [Tổng quan kiến trúc](../docs/ARCHITECTURE.md) – adapter backend, định dạng thông điệp, luồng frontend.
-- [Ghi chú SDK Wheeltec](../docs/SDK_NOTES.md) – build SDK nhà sản xuất trên Linux/Raspberry Pi và cách giao tiếp bằng Python.
+- [Tổng quan kiến trúc](../references/ARCHITECTURE.md) – adapter backend, định dạng thông điệp, luồng frontend.
+- [Ghi chú SDK Wheeltec](../references/SDK_NOTES.md) – build SDK nhà sản xuất trên Linux/Raspberry Pi và cách giao tiếp bằng Python.
 
 ## Bắt đầu nhanh
 

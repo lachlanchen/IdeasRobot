@@ -33,8 +33,8 @@ Las guías de contribución están en `AGENTS.md`.
 
 ## Documentación
 
-- [Resumen de arquitectura](../docs/ARCHITECTURE.md): adaptadores, mensajes y flujo del frontend.
-- [Notas del SDK Wheeltec](../docs/SDK_NOTES.md): compilación en Linux/Raspberry Pi e integración Python.
+- [Resumen de arquitectura](../references/ARCHITECTURE.md): adaptadores, mensajes y flujo del frontend.
+- [Notas del SDK Wheeltec](../references/SDK_NOTES.md): compilación en Linux/Raspberry Pi e integración Python.
 
 ## Inicio rápido
 

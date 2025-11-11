@@ -33,8 +33,8 @@ mic_array_dashboard/
 
 ## 문서
 
-- [아키텍처 개요](../docs/ARCHITECTURE.md) – 백엔드 어댑터, 메시지 포맷, 프론트엔드 흐름.
-- [Wheetlec SDK 노트](../docs/SDK_NOTES.md) – Linux / Raspberry Pi에서 SDK를 빌드하고 Python으로 제어하는 방법.
+- [아키텍처 개요](../references/ARCHITECTURE.md) – 백엔드 어댑터, 메시지 포맷, 프론트엔드 흐름.
+- [Wheetlec SDK 노트](../references/SDK_NOTES.md) – Linux / Raspberry Pi에서 SDK를 빌드하고 Python으로 제어하는 방법.
 
 ## 빠른 시작
 

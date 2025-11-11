@@ -33,8 +33,8 @@ mic_array_dashboard/
 
 ## 文档
 
-- [架构概览](../docs/ARCHITECTURE.md)：后端适配器、消息格式与前端流程。
-- [Wheetlec SDK 深度笔记](../docs/SDK_NOTES.md)：在 Linux / Raspberry Pi 构建官方 SDK、以及 Python 集成技巧。
+- [架构概览](../references/ARCHITECTURE.md)：后端适配器、消息格式与前端流程。
+- [Wheetlec SDK 深度笔记](../references/SDK_NOTES.md)：在 Linux / Raspberry Pi 构建官方 SDK、以及 Python 集成技巧。
 
 ## 快速开始
 

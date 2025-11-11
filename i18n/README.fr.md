@@ -35,8 +35,8 @@ Consultez `AGENTS.md` pour les consignes de contribution.
 
 ## Documentation
 
-- [Vue d’architecture](../docs/ARCHITECTURE.md) – adaptateurs backend, formats de message, flux front-end.
-- [Notes SDK Wheeltec](../docs/SDK_NOTES.md) – compilation des SDK officiels sur Linux/Raspberry Pi et intégration Python.
+- [Vue d’architecture](../references/ARCHITECTURE.md) – adaptateurs backend, formats de message, flux front-end.
+- [Notes SDK Wheeltec](../references/SDK_NOTES.md) – compilation des SDK officiels sur Linux/Raspberry Pi et intégration Python.
 
 ## Démarrage rapide
 

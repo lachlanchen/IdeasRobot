@@ -33,8 +33,8 @@ mic_array_dashboard/
 
 ## ドキュメント
 
-- [アーキテクチャ概要](../docs/ARCHITECTURE.md)：バックエンドアダプタ、メッセージ形式、フロントエンドフロー。
-- [Wheetlec SDK ノート](../docs/SDK_NOTES.md)：Linux / Raspberry Pi での SDK ビルドと Python 連携。
+- [アーキテクチャ概要](../references/ARCHITECTURE.md)：バックエンドアダプタ、メッセージ形式、フロントエンドフロー。
+- [Wheetlec SDK ノート](../references/SDK_NOTES.md)：Linux / Raspberry Pi での SDK ビルドと Python 連携。
 
 ## クイックスタート
 
