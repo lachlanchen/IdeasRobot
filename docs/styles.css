@@ -72,6 +72,14 @@ footer {
   color: #041221;
 }
 
+.logo-image {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: contain;
+  display: block;
+}
+
 .logo-title {
   margin: 0;
   font-weight: 600;
