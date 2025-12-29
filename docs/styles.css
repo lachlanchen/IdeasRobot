@@ -58,26 +58,18 @@ footer {
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.logo-mark {
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
-  background: linear-gradient(130deg, var(--accent), var(--accent-2));
-  display: grid;
-  place-items: center;
-  font-weight: 600;
-  color: #041221;
+  gap: 16px;
 }
 
 .logo-image {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: clamp(120px, 14vw, 140px);
+  height: clamp(120px, 14vw, 140px);
+  border-radius: 18px;
   object-fit: contain;
   display: block;
+  flex-shrink: 0;
+  background: #fff;
+  padding: 6px;
 }
 
 .logo-title {
