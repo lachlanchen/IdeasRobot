@@ -5,7 +5,9 @@ const yearEl = document.getElementById("year");
 const langButton = document.getElementById("langButton");
 const langMenu = document.getElementById("langMenu");
 const langSwitcher = document.querySelector(".lang-switcher");
+const themeToggle = document.getElementById("themeToggle");
 const LANGUAGE_KEY = "ideasrobot_lang";
+const THEME_KEY = "ideasrobot_theme";
 
 const translations = {
   en: {
@@ -774,6 +776,37 @@ function setLanguage(lang) {
   applyTranslations();
 }
 
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  if (!themeToggle) return;
+  themeToggle.setAttribute("aria-pressed", theme === "dark");
+  themeToggle.textContent = theme === "dark" ? "🌙 Dark" : "☀️ Light";
+}
+
+function initThemeToggle() {
+  if (!themeToggle) {
+    applyTheme("light");
+    return;
+  }
+  let storedTheme = null;
+  try {
+    storedTheme = localStorage.getItem(THEME_KEY);
+  } catch (error) {
+    console.warn("Unable to read theme preference", error);
+  }
+  applyTheme(storedTheme === "dark" ? "dark" : "light");
+  themeToggle.addEventListener("click", () => {
+    const nextTheme =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
+    try {
+      localStorage.setItem(THEME_KEY, nextTheme);
+    } catch (error) {
+      console.warn("Unable to persist theme preference", error);
+    }
+  });
+}
+
 function closeMenu() {
   if (!langSwitcher) return;
   langSwitcher.classList.remove("open");
@@ -806,6 +839,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 applyTranslations();
+initThemeToggle();
 
 function initWaveBars() {
   if (!wavePreview) return;
