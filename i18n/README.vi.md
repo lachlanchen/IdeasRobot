@@ -1,9 +1,7 @@
 [English](../README.md) · [العربية](README.ar.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Tiếng Việt](README.vi.md) · [中文 (简体)](README.zh-Hans.md) · [中文（繁體）](README.zh-Hant.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
 
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/logos/banner.png" alt="LazyingArt banner" />
-</p>
+[![LazyingArt banner](https://github.com/lachlanchen/lachlanchen/raw/main/figs/banner.png)](https://github.com/lachlanchen/lachlanchen/blob/main/figs/banner.png)
 
 # IdeasRobot
 
@@ -13,67 +11,128 @@
 ![Hardware](https://img.shields.io/badge/Hardware-Wheeltec%20M2-3c8c3c)
 ![OS](https://img.shields.io/badge/OS-Linux-FCC624?logo=linux&logoColor=111)
 ![Status](https://img.shields.io/badge/Project-Active%20Runtime%20%2B%20Vendor%20Assets-2f855a)
+![Stars](https://img.shields.io/github/stars/lachlanchen/IdeasRobot?label=Stars&logo=github&style=flat-square)
+![Forks](https://img.shields.io/github/forks/lachlanchen/IdeasRobot?label=Forks&logo=github&style=flat-square)
+![Last%20Commit](https://img.shields.io/github/last-commit/lachlanchen/IdeasRobot?label=Last%20Commit&logo=git&style=flat-square)
 
-IdeasRobot là một bảng điều khiển mic và camera theo phong cách thư thái, lấy cảm hứng từ *The Art of Lazying* và *OnlyIdeas*: backend Tornado giao tiếp với mảng micro Wheeltec M2 (hoặc trình mô phỏng), kết hợp với giao diện PWA/Android/iOS có thể cài đặt để phát trực tuyến năng lượng dạng sóng, telemetry góc đánh thức và xử lý ghi âm một chạm từ bất kỳ đâu.
+IdeasRobot là một bảng điều khiển mic-and-camera mang phong cách thư giãn, lấy cảm hứng từ *The Art of Lazying* và *OnlyIdeas*: một backend Tornado giao tiếp với mảng microphone Wheeltec M2 (hoặc trình mô phỏng), đồng thời cung cấp giao diện PWA/Android/iOS cài đặt được để xem năng lượng waveform, telemetry góc đánh thức và bản ghi một chạm.
 
-## Tổng quan
+## Fast Facts
 
-IdeasRobot kết hợp ba lớp trong cùng một repository:
+| Khu vực | Chi tiết |
+| --- | --- |
+| Vai trò của repository | Demo runtime + tham chiếu SDK nhà cung cấp/legacy |
+| Stack runtime | Tornado backend + WebSocket + REST + frontend cài đặt được |
+| Đường đi phần cứng | Mảng Wheeltec M2 với `UART` + mô phỏng dự phòng `ALSA` |
+| Tài nguyên kiểm thử | `mic_array_dashboard/recordings`, `docs`, cây tham chiếu SDK `M2` |
 
-- Runtime điều khiển thời gian thực: `mic_array_dashboard/backend` (Tornado + WebSocket + REST).
-- Ứng dụng client có thể cài đặt: `mic_array_dashboard/frontend/public` (PWA cho Android/iOS/Desktop).
-- Tài liệu tham chiếu phần cứng/nhà cung cấp: bộ SDK Wheeltec, luồng tích hợp Raspberry Pi legacy, và ghi chú kiến trúc để mở rộng sang hệ robot rộng hơn.
+## Table of Contents
 
-Repository này được thiết kế có chủ đích theo kiểu hỗn hợp: mã runtime đang hoạt động cùng các tài sản vendor/legacy cần thiết cho quá trình bring-up mức thấp.
+- [Fast Facts](#fast-facts)
+- [Overview](#overview)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Web app](#web-app)
+  - [REST API](#rest-api)
+  - [WebSocket contract](#websocket-contract)
+- [Configuration](#configuration)
+- [Examples](#examples)
+- [Development Notes](#development-notes)
+- [Website](#website)
+- [Legacy and Vendor SDK Notes](#legacy-and-vendor-sdk-notes)
+- [Troubleshooting](#troubleshooting)
+- [Roadmap](#roadmap)
+- [Contribution](#contribution)
+- [Support](#-support)
+- [License](#license)
 
-## Điểm nổi bật
+## Overview
+
+IdeasRobot kết hợp ba lớp trong một repository:
+
+- Runtime điều khiển thời gian thực trong `mic_array_dashboard/backend` (Tornado + WebSocket + REST).
+- UI client cài đặt được trong `mic_array_dashboard/frontend/public` (PWA cho Android/iOS/Desktop).
+- Tài liệu tham chiếu phần cứng và nhà cung cấp trong `M2系列麦克风语音阵列客户资料*`, tài sản Raspberry Pi legacy và ghi chú giao thức cho các mở rộng tầng thấp hơn.
+
+Repository này được thiết kế theo hướng hỗn hợp: mã runtime đang hoạt động đi cùng các tài nguyên vendor/legacy cần cho bring-up mức thấp.
+
+## Features
 
 | Khả năng | Mô tả |
 | --- | --- |
-| 🎛️ Trung tâm điều khiển thời gian thực | `/ws/stream` đẩy các cột waveform, trạng thái SILENCE/SPEAKING và góc wake, trong khi `/api/*` xử lý trạng thái và ghi âm. |
-| 🔌 Nhận biết phần cứng | Đầu vào ALSA (qua `sounddevice`) và gói UART từ vendor được bọc với cơ chế fallback mềm, nên vẫn phát triển được ngay cả khi không có thiết bị. |
-| 📱 PWA mọi nơi | Cài được trên Android/iOS/Desktop; có waveform neon, trực quan hóa hướng dựa trên la bàn và bộ nhớ đệm offline. |
-| 🤖 Sẵn sàng cho robot | Được thiết kế như lớp cảm biến frontend cho các bản IdeasRobot tương lai kết hợp mảng micro + camera + động cơ + tự động hóa OnlyIdeas. |
+| 🎛️ Realtime control hub | Backend `Tornado` stream waveform bars, trạng thái SILENCE/SPEAKING, telemetry góc wake và sự kiện ghi âm, đồng thời expose các endpoint REST cho trạng thái và truy xuất âm thanh. |
+| 🔌 Hardware aware | Đầu vào audio ALSA và gói UART được bọc cùng đường dự phòng mô phỏng, nhờ đó có thể phát triển ngay cả khi chưa có thiết bị vật lý. |
+| 📱 PWA everywhere | Frontend cài đặt được trên Android/iOS/Desktop, gồm waveform, hiển thị hướng, và hành vi cache offline từ service worker. |
+| 🤖 Robot-ready | Thiết kế như lớp cảm biến frontend cho các hệ thống IdeasRobot tương lai, tích hợp camera, module di chuyển và luồng tự động hóa. |
+| 📚 Reference-rich | Bao gồm tài liệu, vật liệu SDK nhà cung cấp và đường dẫn Raspberry Pi legacy trong cùng repository để thử nghiệm và khắc phục nhanh hơn. |
 
-## Cấu trúc dự án
+## Project Structure
 
 ```text
 .
 ├── README.md
 ├── AGENTS.md
-├── i18n/                          # Các biến thể README đa ngôn ngữ
+├── i18n/
+│   ├── README.ar.md
+│   ├── README.de.md
+│   ├── README.es.md
+│   ├── README.fr.md
+│   ├── README.ja.md
+│   ├── README.ko.md
+│   ├── README.ru.md
+│   ├── README.vi.md
+│   ├── README.zh-Hans.md
+│   └── README.zh-Hant.md
 ├── references/
-│   ├── ARCHITECTURE.md            # Chi tiết giao thức backend/frontend và thành phần
-│   └── SDK_NOTES.md               # Ghi chú chuyên sâu Linux/Raspberry Pi SDK
-├── docs/                          # Landing tĩnh cho GitHub Pages
+│   ├── ARCHITECTURE.md
+│   └── SDK_NOTES.md
+├── docs/
 ├── mic_array_dashboard/
 │   ├── backend/
-│   │   ├── server.py              # Entrypoint runtime chính
-│   │   ├── config.py              # Cấu hình theo biến môi trường
+│   │   ├── server.py
+│   │   ├── config.py
 │   │   ├── requirements.txt
 │   │   └── device/
 │   │       ├── audio_capture.py
 │   │       └── direction_reader.py
-│   ├── frontend/public/           # Tệp PWA
-│   └── recordings/                # WAV output khi runtime chạy
-├── raspberrypi_legacy/            # Workflow và script Raspberry Pi legacy
-└── M2系列麦克风语音阵列客户资料/    # Kho SDK vendor và tài liệu hướng dẫn
+│   ├── frontend/
+│   │   └── public/
+│   │       ├── index.html
+│   │       ├── app.js
+│   │       ├── styles.css
+│   │       ├── manifest.json
+│   │       ├── service-worker.js
+│   │       └── icons/
+│   ├── recordings/
+│   └── README.md
+├── M2系列麦克风语音阵列客户资料/
+│   └── M2系列麦克风语音阵列客户资料V5.1_20231128/
+├── raspberrypi_legacy/
+├── figs/
+└── .auto-readme-work/
+    └── 20260301_071231/
+        ├── pipeline-context.md
+        ├── repo-structure-analysis.md
+        └── translation-plan.txt
 ```
 
 Tài liệu chi tiết:
 
 - [Tổng quan kiến trúc](references/ARCHITECTURE.md)
-- [Ghi chú chuyên sâu Wheeltec SDK](references/SDK_NOTES.md)
+- [Ghi chú Wheeltec SDK](references/SDK_NOTES.md)
 
-## Điều kiện tiên quyết
+## Prerequisites
 
-### Runtime (dashboard)
+### Runtime backend
 
 - Python 3.x
 - Linux với ALSA audio stack
-- Cổng serial mảng micro (thường là `/dev/wheeltec_mic`) cho chế độ phần cứng
+- Cổng serial của mảng microphone (thường là `/dev/wheeltec_mic`) cho chế độ phần cứng
 
-### Gói hệ thống tùy chọn (khuyến nghị)
+### Optional system packages (recommended)
 
 ```bash
 sudo apt update
@@ -81,77 +140,43 @@ sudo apt install build-essential cmake libasound2-dev libpthread-stubs0-dev \
                  libssl-dev python3-pip python3-venv alsa-utils
 ```
 
-### Trợ giúp đặt tên phần cứng (script vendor)
+### Hardware naming helper (vendor workflow)
 
-Sau khi cập nhật kernel/USB bridge, hãy chạy lại tiện ích udev trong đường dẫn SDK vendor để đảm bảo `/dev/wheeltec_mic` vẫn khả dụng:
+Sau khi thay đổi kernel/USB bridge, chạy lại công cụ từ tài sản SDK để giữ `/dev/wheeltec_mic` luôn hiển thị:
 
 ```bash
-# Example path inside bundled SDK assets:
-# .../offline_mic/scripts/ch9102_udev.sh
+# Example (SDK path may vary):
+cd .../offline_mic/scripts
 sudo bash ch9102_udev.sh
 ```
 
-## Cài đặt
+### Repository assumptions
+
+- Trong snapshot này chưa có tệp license cấp repo, vì vậy điều khoản pháp lý tạm thời được xem là chưa chốt cho đến khi có file rõ ràng.
+- Một số cây vendor/legacy lớn là tài liệu tham chiếu lưu trữ, không cùng nhịp release với runtime.
+
+## Installation
 
 ```bash
 git clone https://github.com/lachlanchen/IdeasRobot.git
 cd IdeasRobot/mic_array_dashboard/backend
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Phụ thuộc (từ `requirements.txt`):
+Các dependency được liệt kê trong `requirements.txt`:
 
 - `tornado>=6.3`
 - `pyserial>=3.5`
 - `sounddevice>=0.4`
 
-## Khởi động nhanh
+## Usage
 
-```bash
-MIC_ARRAY_SERIAL=/dev/wheeltec_mic \
-MIC_ARRAY_AUDIO_DEVICE="hw:1,0" \
-python -m mic_array_dashboard.backend.server
-```
-
-Mở `http://localhost:8080` để xem bảng điều khiển hoặc cài dưới dạng PWA.
-
-Để prototype không cần phần cứng:
-
-```bash
-MIC_ARRAY_SIMULATE_AUDIO=1 \
-MIC_ARRAY_SIMULATE_DIRECTION=1 \
-python -m mic_array_dashboard.backend.server
-```
-
-## Cấu hình
-
-Các biến môi trường được định nghĩa trong `mic_array_dashboard/backend/config.py`.
-
-| Biến | Mô tả | Mặc định |
-| --- | --- | --- |
-| `MIC_ARRAY_SERIAL` | Thiết bị serial phát frame góc wake | `/dev/wheeltec_mic` |
-| `MIC_ARRAY_SERIAL_BAUD` | Baud rate cho UART của mảng micro | `115200` |
-| `MIC_ARRAY_AUDIO_DEVICE` | ID hoặc tên thiết bị ALSA truyền cho `sounddevice` | mặc định hệ thống |
-| `MIC_ARRAY_SAMPLE_RATE` | Tần số lấy mẫu capture (Hz) | `16000` |
-| `MIC_ARRAY_CHUNK` | Số mẫu trên mỗi chunk | `2048` |
-| `MIC_ARRAY_CHANNELS` | Số kênh (1 = mono) | `1` |
-| `MIC_ARRAY_RECORDING_DIR` | Thư mục lưu bản ghi WAV | `mic_array_dashboard/recordings` |
-| `MIC_ARRAY_SIMULATE_AUDIO` | Phát audio sóng sine tổng hợp | `0` |
-| `MIC_ARRAY_SIMULATE_DIRECTION` | Phát góc wake giả lập | `0` |
-| `MIC_ARRAY_SILENCE_THRESHOLD` | Ngưỡng `level` cho trạng thái speaking/silence | `0.12` |
-| `MIC_ARRAY_WAVEFORM_BARS` | Số cột waveform gửi mỗi chunk | `72` |
-| `MIC_ARRAY_MAX_CLIENTS` | Số client WebSocket đồng thời tối đa | `32` |
-| `MIC_ARRAY_WS_PATH` | Endpoint WebSocket | `/ws/stream` |
-| `MIC_ARRAY_HOST` | Host bind | `0.0.0.0` |
-| `MIC_ARRAY_PORT` | Cổng HTTP | `8080` |
-
-## Cách dùng
-
-### Ứng dụng web
+### Web app
 
 - UI chính: `http://localhost:8080`
-- Cài dưới dạng PWA từ luồng add-to-home-screen của Chrome/Edge/Safari
+- Cài PWA từ luồng add-to-home-screen của Chrome/Edge/Safari
 
 ### REST API
 
@@ -170,11 +195,11 @@ curl -X POST http://localhost:8080/api/recordings/stop
 curl -OJ http://localhost:8080/api/recordings/<session_id>/audio
 ```
 
-### Hợp đồng WebSocket
+### WebSocket contract
 
 - Endpoint: `/ws/stream` (hoặc `MIC_ARRAY_WS_PATH`)
-- Kiểu message từ server: `hello`, `waveform`, `direction`, `recording_started`, `recording_stopped`, `pong`
-- Lệnh từ client: `ping`, `start_recording`, `stop_recording`
+- Kiểu message server gửi: `hello`, `waveform`, `direction`, `recording_started`, `recording_stopped`, `pong`
+- Lệnh client: `ping`, `start_recording`, `stop_recording`
 
 Ví dụ payload lệnh:
 
@@ -182,9 +207,47 @@ Ví dụ payload lệnh:
 {"command":"start_recording"}
 ```
 
-## Ví dụ
+### Quick Start (from source)
 
-### 1) Chạy ở chế độ debug với autoreload
+```bash
+MIC_ARRAY_SERIAL=/dev/wheeltec_mic \
+MIC_ARRAY_AUDIO_DEVICE="hw:1,0" \
+python -m mic_array_dashboard.backend.server
+```
+
+Cho prototyping không cần phần cứng:
+
+```bash
+MIC_ARRAY_SIMULATE_AUDIO=1 \
+MIC_ARRAY_SIMULATE_DIRECTION=1 \
+python -m mic_array_dashboard.backend.server
+```
+
+## Configuration
+
+Các biến môi trường được định nghĩa trong `mic_array_dashboard/backend/config.py`.
+
+| Biến | Mô tả | Mặc định |
+| --- | --- | --- |
+| `MIC_ARRAY_SERIAL` | Thiết bị serial phát frame góc wake | `/dev/wheeltec_mic` |
+| `MIC_ARRAY_SERIAL_BAUD` | Baud rate serial | `115200` |
+| `MIC_ARRAY_AUDIO_DEVICE` | ID/tên thiết bị ALSA truyền cho `sounddevice` | system default |
+| `MIC_ARRAY_SAMPLE_RATE` | Tốc độ lấy mẫu (Hz) | `16000` |
+| `MIC_ARRAY_CHUNK` | Số mẫu mỗi audio chunk | `2048` |
+| `MIC_ARRAY_CHANNELS` | Số kênh (1 = mono) | `1` |
+| `MIC_ARRAY_RECORDING_DIR` | Thư mục lưu bản ghi WAV | `mic_array_dashboard/recordings` |
+| `MIC_ARRAY_SIMULATE_AUDIO` | Tạo dữ liệu audio giả | `0` |
+| `MIC_ARRAY_SIMULATE_DIRECTION` | Tạo dữ liệu góc giả | `0` |
+| `MIC_ARRAY_SILENCE_THRESHOLD` | Ngưỡng speech/silence | `0.12` |
+| `MIC_ARRAY_WAVEFORM_BARS` | Số waveform bar gửi mỗi frame | `72` |
+| `MIC_ARRAY_MAX_CLIENTS` | Số client WebSocket tối đa đồng thời | `32` |
+| `MIC_ARRAY_WS_PATH` | WebSocket path | `/ws/stream` |
+| `MIC_ARRAY_HOST` | Host bind | `0.0.0.0` |
+| `MIC_ARRAY_PORT` | Cổng HTTP | `8080` |
+
+## Examples
+
+### Debug mode with autoreload
 
 ```bash
 MIC_ARRAY_DEBUG=1 \
@@ -193,43 +256,45 @@ MIC_ARRAY_SIMULATE_DIRECTION=1 \
 python -m mic_array_dashboard.backend.server
 ```
 
-### 2) Lưu bản ghi ngoài repository
+### Store recordings outside repository
 
 ```bash
 MIC_ARRAY_RECORDING_DIR=/data/ideasrobot/recordings \
 python -m mic_array_dashboard.backend.server
 ```
 
-### 3) Mở truy cập trong mạng nội bộ
+### Cho phép truy cập dịch vụ trong mạng nội bộ
 
 ```bash
 MIC_ARRAY_HOST=0.0.0.0 MIC_ARRAY_PORT=8080 \
 python -m mic_array_dashboard.backend.server
 ```
 
-## Ghi chú phát triển
+## Development Notes
 
-- Chạy `MIC_ARRAY_DEBUG=1` khi lặp phát triển để bật autoreload Tornado và log chi tiết.
+- Chạy với `MIC_ARRAY_DEBUG=1` khi lặp phát triển để có log chi tiết và autoreload.
 - Audio capture phụ thuộc ALSA; chạy `python -m sounddevice` để liệt kê chỉ số thiết bị.
-- Tệp frontend nằm trong `frontend/public`; sửa `styles.css` hoặc `app.js` chỉ cần refresh trình duyệt.
-- Mở rộng hành vi backend tại `mic_array_dashboard/backend/server.py` (handlers + tạo hình message).
-- Mở rộng tích hợp cảm biến thông qua adapter trong `mic_array_dashboard/backend/device/`.
-- Backend sẽ tự tạo `mic_array_dashboard/recordings/` nếu chưa tồn tại.
+- Frontend nằm trong `frontend/public`; chỉnh `styles.css` hoặc `app.js` thường chỉ cần refresh trình duyệt sau khi khởi động lại.
+- Mở rộng hành vi backend ở `mic_array_dashboard/backend/server.py` (handlers và message shaping).
+- Mở rộng các adapter cảm biến trong `mic_array_dashboard/backend/device/`.
+- Backend tự tạo `mic_array_dashboard/recordings/` nếu chưa tồn tại.
 
 ## Website
 
-- Landing tĩnh nằm dưới `docs/` (HTML/CSS/JS).
-- Cấu hình GitHub Pages phục vụ `/docs` trên `main`.
-- Giữ `docs/CNAME` là `robot.lazying.art`.
+- Website/landing tĩnh nằm trong `docs/` (HTML/CSS/JS).
+- Cấu hình GitHub Pages serve thư mục `/docs` trên nhánh `main`.
+- Giữ `docs/CNAME` là `robot.lazying.art` khi deploy domain này.
 
-## Ghi chú SDK Legacy/Vendor
+## Legacy and Vendor SDK Notes
 
-Repository bao gồm đầy đủ tài liệu SDK Wheeltec và tài sản Raspberry Pi legacy để build mức thấp và xác thực giao thức:
+Repository này gói cả runtime và tài sản vendor/legacy, gồm:
 
 - `M2系列麦克风语音阵列客户资料/.../3.Linux_SDK与使用教程/...`
 - `raspberrypi_legacy/`
 
-Luồng build mẫu từ demo SDK (như ghi trong tài liệu đi kèm):
+Trong đó có luồng recorder ASR offline và VAD cũ; dùng backend Python hiện tại làm runtime chính cho dashboard.
+
+Luồng build mẫu kiểm tra tương thích:
 
 ```bash
 cd .../offline_mic/samples/asr_offline_record_sample
@@ -240,86 +305,50 @@ export LD_LIBRARY_PATH=../libs/x64:$LD_LIBRARY_PATH
 ./asr_offline_record_sample
 ```
 
-Cho ARM64 Raspberry Pi:
+Dành cho ARM64 Raspberry Pi:
 
 ```bash
 make LINUX_ARM64=1
 export LD_LIBRARY_PATH=../libs/arm64:$LD_LIBRARY_PATH
 ```
 
-## Khắc phục sự cố
+Khi làm việc với USB rule nhà cung cấp, chạy lại `ch9102_udev.sh` và gắn lại thiết bị nếu `/dev/wheeltec_mic` biến mất.
 
-| Triệu chứng | Nguyên nhân/cách xử lý khả dĩ |
+## Troubleshooting
+
+| Triệu chứng | Nguyên nhân / cách xử lý |
 | --- | --- |
-| `libmsc.so: cannot open shared object file` | Đặt `LD_LIBRARY_PATH` trỏ đến đúng thư mục SDK `libs/<arch>`. |
-| Lỗi thiết bị ALSA | Kiểm tra chỉ số qua `arecord -l` và rà `MIC_ARRAY_AUDIO_DEVICE`. |
-| Thiếu `/dev/wheeltec_mic` | Chạy lại `ch9102_udev.sh`, cắm lại thiết bị, và xác minh thành viên nhóm `dialout`. |
-| Không có telemetry trên UI | Xác nhận đường dẫn WebSocket khớp `MIC_ARRAY_WS_PATH` và bật cờ mô phỏng khi không có phần cứng. |
-| Không xuất hiện prompt cài PWA | Đảm bảo HTTPS/public origin ở production và `manifest.json` + định tuyến service worker hợp lệ. |
+| `libmsc.so: cannot open shared object file` | Set `LD_LIBRARY_PATH` về đúng thư mục SDK (`libs/<arch>`). |
+| Lỗi đầu vào ALSA | Kiểm tra thiết bị bằng `arecord -l` và cập nhật `MIC_ARRAY_AUDIO_DEVICE`. |
+| Thiếu `/dev/wheeltec_mic` | Chạy lại `ch9102_udev.sh`, rút/gắn lại thiết bị, và xác nhận quyền nhóm `dialout`. |
+| Không có telemetry trong UI | Đảm bảo WebSocket path khớp `MIC_ARRAY_WS_PATH`; dùng cờ mô phỏng khi không có phần cứng. |
+| Prompt cài PWA không hiển thị | Đảm bảo môi trường production dùng HTTPS/public origin và cấu hình hợp lệ cho `manifest.json` + service-worker. |
 
-## Lộ trình
+## Roadmap
 
-- Thêm panel luồng camera và hợp nhất sự kiện với telemetry góc wake.
-- Thêm cầu nối tự động hóa cho luồng OnlyIdeas (tích hợp MQTT/event).
-- Thêm lưu trữ/phân tích cho lịch sử waveform + hướng.
-- Cải thiện mẫu triển khai (reverse proxy + service units).
-- Mở rộng phạm vi tương thích giao thức cho các bản firmware mảng micro tương lai.
+- Thêm panel stream camera và ghép sự kiện với telemetry góc wake.
+- Thêm cầu nối tự động hóa cho workflow kiểu OnlyIdeas (tích hợp MQTT/event).
+- Thêm persistence và analytics cho lịch sử waveform + hướng.
+- Cải tiến mẫu triển khai (service unit + ví dụ reverse proxy).
+- Mở rộng tương thích giao thức cho các bản firmware mic array trong tương lai.
 
-## Đóng góp
+## Contribution
 
-- Xem `AGENTS.md` để biết hướng dẫn cộng tác viên.
-- Ưu tiên pull request nhỏ, tập trung và có bước tái hiện rõ ràng.
-- Bao gồm ngữ cảnh phần cứng/HĐH và các lệnh đã chạy cho thay đổi ảnh hưởng runtime.
-- Nếu thay đổi tham chiếu SDK vendor, hãy đồng bộ `references/SDK_NOTES.md`.
+- Xem `AGENTS.md` để biết quy chuẩn đóng góp và yêu cầu nhận biết phần cứng.
+- Ưu tiên pull request nhỏ, tập trung, kèm bước tái hiện rõ ràng.
+- Bao gồm bối cảnh phần cứng/HĐH và các lệnh đã chạy cho bất kỳ thay đổi ảnh hưởng runtime nào.
+- Nếu chạm vào tham chiếu SDK vendor, hãy cập nhật `references/SDK_NOTES.md`.
 
-Lưu ý: repository hiện chưa có `CONTRIBUTING.md` chuyên biệt.
+Lưu ý: repo hiện chưa có tệp `CONTRIBUTING.md` chuyên biệt.
 
-## Donate & Support
+## ❤️ Support
 
-Sự hỗ trợ của bạn giúp hộp công cụ IdeasRobot luôn mở, tài trợ nguyên mẫu thiết bị, và hỗ trợ triển khai cho cộng đồng. Bạn có thể ủng hộ qua bất kỳ liên kết nào dưới đây:
+| Donate | PayPal | Stripe |
+| --- | --- | --- |
+| [![Donate](https://camo.githubusercontent.com/24a4914f0b42c6f435f9e101621f1e52535b02c225764b2f6cc99416926004b7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446f6e6174652d4c617a79696e674172742d3045413545393f7374796c653d666f722d7468652d6261646765266c6f676f3d6b6f2d6669266c6f676f436f6c6f723d7768697465)](https://chat.lazying.art/donate) | [![PayPal](https://camo.githubusercontent.com/d0f57e8b016517a4b06961b24d0ca87d62fdba16e18bbdb6aba28e978dc0ea21/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f50617950616c2d526f6e677a686f754368656e2d3030343537433f7374796c653d666f722d7468652d6261646765266c6f676f3d70617970616c266c6f676f436f6c6f723d7768697465)](https://paypal.me/RongzhouChen) | [![Stripe](https://camo.githubusercontent.com/1152dfe04b6943afe3a8d2953676749603fb9f95e24088c92c97a01a897b4942/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5374726970652d446f6e6174652d3633354246463f7374796c653d666f722d7468652d6261646765266c6f676f3d737472697065266c6f676f436f6c6f723d7768697465)](https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400) |
 
-- GitHub Sponsors: https://github.com/sponsors/lachlanchen
-- LazyingArt: https://lazying.art
-- EchoMind (chat): https://chat.lazying.art
-- OnlyIdeas: https://onlyideas.art
+## License
 
-<div align="center">
-<table style="margin:0 auto; text-align:center; border-collapse:collapse;">
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://chat.lazying.art/donate">https://chat.lazying.art/donate</a>
-    </td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://chat.lazying.art/donate"><img src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_button.svg" alt="Donate" height="44"></a>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://paypal.me/RongzhouChen">
-        <img src="https://img.shields.io/badge/PayPal-Donate-003087?logo=paypal&logoColor=white" alt="Donate with PayPal">
-      </a>
-    </td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400">
-        <img src="https://img.shields.io/badge/Stripe-Donate-635bff?logo=stripe&logoColor=white" alt="Donate with Stripe">
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><strong>WeChat</strong></td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><strong>Alipay</strong></td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><img alt="WeChat QR" src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_wechat.png" width="240"/></td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><img alt="Alipay QR" src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_alipay.png" width="240"/></td>
-  </tr>
-</table>
-</div>
+Tình trạng tệp giấy phép hiện chưa rõ trong repository này: snapshot hiện tại chưa có `LICENSE` ở cấp cao nhất.
 
-ありがとうございます · 谢谢你 · Thank you for helping the IdeasRobot learn, listen, and share more openly.
-
-## Giấy phép
-
-Trạng thái tệp giấy phép hiện chưa rõ trong repository này: tại thời điểm soạn thảo chưa có tệp `LICENSE` ở cấp cao nhất.
-
-Giả định cho cộng tác viên: coi mã/tài sản là tài sản độc quyền của chủ repository trừ khi tệp giấy phép được thêm hoặc làm rõ trong một bản cập nhật tương lai.
+Giả định cho người đóng góp: coi mã và tài sản là sở hữu của chủ repository cho đến khi có giấy phép rõ ràng được thêm vào hoặc xác nhận trong lần cập nhật tới.

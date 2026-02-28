@@ -1,9 +1,7 @@
 [English](../README.md) · [العربية](README.ar.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Tiếng Việt](README.vi.md) · [中文 (简体)](README.zh-Hans.md) · [中文（繁體）](README.zh-Hant.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
 
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/logos/banner.png" alt="LazyingArt banner" />
-</p>
+[![LazyingArt banner](https://github.com/lachlanchen/lachlanchen/raw/main/figs/banner.png)](https://github.com/lachlanchen/lachlanchen/blob/main/figs/banner.png)
 
 # IdeasRobot
 
@@ -13,27 +11,63 @@
 ![Hardware](https://img.shields.io/badge/Hardware-Wheeltec%20M2-3c8c3c)
 ![OS](https://img.shields.io/badge/OS-Linux-FCC624?logo=linux&logoColor=111)
 ![Status](https://img.shields.io/badge/Project-Active%20Runtime%20%2B%20Vendor%20Assets-2f855a)
+![Stars](https://img.shields.io/github/stars/lachlanchen/IdeasRobot?label=Stars&logo=github&style=flat-square)
+![Forks](https://img.shields.io/github/forks/lachlanchen/IdeasRobot?label=Forks&logo=github&style=flat-square)
+![Last%20Commit](https://img.shields.io/github/last-commit/lachlanchen/IdeasRobot?label=Last%20Commit&logo=git&style=flat-square)
 
-IdeasRobot es una consola relajada de micrófono y cámara inspirada en *The Art of Lazying* y *OnlyIdeas*: un backend en Tornado que se comunica con el arreglo de micrófonos Wheeltec M2 (o su simulador), junto con una interfaz instalable para PWA/Android/iOS que transmite energía de forma de onda, telemetría de ángulo de activación y permite grabar con un toque desde cualquier lugar.
+IdeasRobot es una consola de micrófono y cámara con tono relajado inspirada en *The Art of Lazying* y *OnlyIdeas*: un backend en Tornado que se comunica con el arreglo de micrófonos Wheeltec M2 (o su simulador) y proporciona una UI instalable en PWA/Android/iOS para la energía de onda, telemetría de ángulo de activación y grabaciones con un toque.
 
-## Resumen
+## Datos clave
 
-IdeasRobot combina tres capas en un solo repositorio:
+| Área | Detalles |
+| --- | --- |
+| Rol del repositorio | Demo de runtime + referencias SDK del proveedor y legado |
+| Stack de ejecución | Backend Tornado + WebSocket + REST + frontend instalable |
+| Ruta de hardware | Arreglo Wheeltec M2 con `UART` + simulación de respaldo por `ALSA` |
+| Activos de validación | `mic_array_dashboard/recordings`, `docs`, árbol de referencia SDK `M2` |
 
-- Runtime de control en tiempo real: `mic_array_dashboard/backend` (Tornado + WebSocket + REST).
-- Aplicación cliente instalable: `mic_array_dashboard/frontend/public` (PWA para Android/iOS/Escritorio).
-- Referencias de hardware/fabricante: paquetes SDK de Wheeltec, rutas de integración heredadas para Raspberry Pi y notas de arquitectura para ampliar hacia sistemas robóticos más generales.
+## Tabla de contenidos
 
-Este repositorio es intencionalmente mixto: código runtime activo junto con recursos de fabricante/heredados necesarios para el arranque de bajo nivel.
+- [Datos clave](#datos-clave)
+- [Visión general](#visión-general)
+- [Características](#características)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Requisitos previos](#requisitos-previos)
+- [Instalación](#instalación)
+- [Uso](#uso)
+  - [Web app](#web-app)
+  - [REST API](#rest-api)
+  - [Contrato WebSocket](#contrato-websocket)
+- [Configuración](#configuración)
+- [Ejemplos](#ejemplos)
+- [Notas de desarrollo](#notas-de-desarrollo)
+- [Sitio web](#sitio-web)
+- [Notas del SDK de proveedor y legado](#notas-del-sdk-de-proveedor-y-legado)
+- [Solución de problemas](#solución-de-problemas)
+- [Hoja de ruta](#hoja-de-ruta)
+- [Contribución](#contribución)
+- [Support](#-support)
+- [Licencia](#licencia)
 
-## Puntos destacados
+## Visión general
+
+IdeasRobot reúne tres capas en un mismo repositorio:
+
+- Runtime de control en tiempo real en `mic_array_dashboard/backend` (Tornado + WebSocket + REST).
+- UI cliente instalable en `mic_array_dashboard/frontend/public` (PWA para Android/iOS/Desktop).
+- Referencias de hardware y proveedor en `M2系列麦克风语音阵列客户资料*`, activos heredados de Raspberry Pi y notas de protocolo para extensiones de bajo nivel.
+
+Este repositorio es deliberadamente mixto: código runtime activo más activos del proveedor y heredados necesarios para la puesta en marcha de bajo nivel.
+
+## Características
 
 | Capacidad | Descripción |
 | --- | --- |
-| 🎛️ Hub de control en tiempo real | `/ws/stream` envía barras de forma de onda, estados SILENCE/SPEAKING y ángulos de activación, mientras que `/api/*` cubre estado y grabaciones. |
-| 🔌 Consciente del hardware | La entrada ALSA (mediante `sounddevice`) y los paquetes UART del fabricante se encapsulan con fallback elegante para que el desarrollo funcione incluso sin el dispositivo. |
-| 📱 PWA en todas partes | Instalable en Android/iOS/Escritorio; incluye forma de onda neón, visualización de dirección basada en brújula y caché offline. |
-| 🤖 Lista para robots | Diseñado como front-end sensorial para futuras versiones de IdeasRobot que combinen arreglo de micrófonos + cámaras + motores + automatizaciones de OnlyIdeas. |
+| 🎛️ Centro de control en tiempo real | El backend `Tornado` envía barras de forma de onda, estado SILENCE/SPEAKING, telemetría de ángulo de activación y eventos de grabación, mientras expone endpoints REST para estado y recuperación de audio. |
+| 🔌 Consciente del hardware | La entrada de audio ALSA y los paquetes seriales UART están envueltos con rutas de simulación de reserva para que el desarrollo pueda continuar sin hardware físico. |
+| 📱 PWA en todas partes | El frontend se puede instalar en Android/iOS/Desktop e incluye forma de onda, visualización de dirección y comportamiento offline en caché desde los recursos del service worker. |
+| 🤖 Listo para robot | Diseñado como frontend sensorial adecuado para futuros sistemas IdeasRobot con cámaras, módulos de movimiento y flujos de automatización. |
+| 📚 Rico en referencias | Incluye documentación, material de SDK del proveedor y rutas heredadas de Raspberry Pi en un mismo repositorio para una experimentación y solución de problemas más rápida. |
 
 ## Estructura del proyecto
 
@@ -41,39 +75,64 @@ Este repositorio es intencionalmente mixto: código runtime activo junto con rec
 .
 ├── README.md
 ├── AGENTS.md
-├── i18n/                          # Variantes multilingües del README
+├── i18n/
+│   ├── README.ar.md
+│   ├── README.de.md
+│   ├── README.es.md
+│   ├── README.fr.md
+│   ├── README.ja.md
+│   ├── README.ko.md
+│   ├── README.ru.md
+│   ├── README.vi.md
+│   ├── README.zh-Hans.md
+│   └── README.zh-Hant.md
 ├── references/
-│   ├── ARCHITECTURE.md            # Protocolo backend/frontend y detalle de componentes
-│   └── SDK_NOTES.md               # Notas profundas del SDK en Linux/Raspberry Pi
-├── docs/                          # Landing estática de GitHub Pages
+│   ├── ARCHITECTURE.md
+│   └── SDK_NOTES.md
+├── docs/
 ├── mic_array_dashboard/
 │   ├── backend/
-│   │   ├── server.py              # Punto de entrada principal del runtime
-│   │   ├── config.py              # Configuración impulsada por variables de entorno
+│   │   ├── server.py
+│   │   ├── config.py
 │   │   ├── requirements.txt
 │   │   └── device/
 │   │       ├── audio_capture.py
 │   │       └── direction_reader.py
-│   ├── frontend/public/           # Archivos PWA
-│   └── recordings/                # Salida WAV en runtime
-├── raspberrypi_legacy/            # Flujos y scripts heredados de Raspberry Pi
-└── M2系列麦克风语音阵列客户资料/    # Archivos SDK del fabricante y manuales
+│   ├── frontend/
+│   │   └── public/
+│   │       ├── index.html
+│   │       ├── app.js
+│   │       ├── styles.css
+│   │       ├── manifest.json
+│   │       ├── service-worker.js
+│   │       └── icons/
+│   ├── recordings/
+│   └── README.md
+├── M2系列麦克风语音阵列客户资料/
+│   └── M2系列麦克风语音阵列客户资料V5.1_20231128/
+├── raspberrypi_legacy/
+├── figs/
+└── .auto-readme-work/
+    └── 20260301_071231/
+        ├── pipeline-context.md
+        ├── repo-structure-analysis.md
+        └── translation-plan.txt
 ```
 
 Documentación detallada:
 
-- [Resumen de arquitectura](references/ARCHITECTURE.md)
-- [Notas detalladas del SDK de Wheeltec](references/SDK_NOTES.md)
+- [Visión general de arquitectura](references/ARCHITECTURE.md)
+- [Notas del SDK de Wheeltec](references/SDK_NOTES.md)
 
 ## Requisitos previos
 
-### Runtime (dashboard)
+### Runtime backend
 
 - Python 3.x
-- Linux con stack de audio ALSA
-- Endpoint serie del arreglo de micrófonos (normalmente `/dev/wheeltec_mic`) para modo hardware
+- Linux con pila de audio ALSA
+- Endpoint serial del arreglo de micrófonos (típicamente `/dev/wheeltec_mic`) para modo hardware
 
-### Paquetes de sistema opcionales (recomendados)
+### Paquetes opcionales del sistema (recomendados)
 
 ```bash
 sudo apt update
@@ -81,79 +140,45 @@ sudo apt install build-essential cmake libasound2-dev libpthread-stubs0-dev \
                  libssl-dev python3-pip python3-venv alsa-utils
 ```
 
-### Helper de nombrado de hardware (script del fabricante)
+### Helper de nombres de hardware (flujo del proveedor)
 
-Después de actualizaciones de kernel/puente USB, vuelve a ejecutar el helper udev en las rutas del SDK del fabricante para mantener disponible `/dev/wheeltec_mic`:
+Después de cambios de kernel/puente USB, vuelve a ejecutar el helper desde los recursos del SDK para que `/dev/wheeltec_mic` siga estando expuesto:
 
 ```bash
-# Example path inside bundled SDK assets:
-# .../offline_mic/scripts/ch9102_udev.sh
+# Ejemplo (la ruta del SDK puede variar):
+cd .../offline_mic/scripts
 sudo bash ch9102_udev.sh
 ```
+
+### Supuestos del repositorio
+
+- No existe un archivo de licencia en la raíz en esta instantánea, así que los términos legales se consideran pendientes hasta que se añada.
+- Parte de los árboles de vendor/legado son referencias archivadas y no siguen el mismo ritmo de publicación que el código runtime.
 
 ## Instalación
 
 ```bash
 git clone https://github.com/lachlanchen/IdeasRobot.git
 cd IdeasRobot/mic_array_dashboard/backend
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Dependencias (desde `requirements.txt`):
+Dependencias listadas en `requirements.txt`:
 
 - `tornado>=6.3`
 - `pyserial>=3.5`
 - `sounddevice>=0.4`
 
-## Inicio rápido
-
-```bash
-MIC_ARRAY_SERIAL=/dev/wheeltec_mic \
-MIC_ARRAY_AUDIO_DEVICE="hw:1,0" \
-python -m mic_array_dashboard.backend.server
-```
-
-Abre `http://localhost:8080` para ver la consola o instalarla como PWA.
-
-Para prototipado sin hardware:
-
-```bash
-MIC_ARRAY_SIMULATE_AUDIO=1 \
-MIC_ARRAY_SIMULATE_DIRECTION=1 \
-python -m mic_array_dashboard.backend.server
-```
-
-## Configuración
-
-Las variables de entorno están definidas en `mic_array_dashboard/backend/config.py`.
-
-| Variable | Descripción | Predeterminado |
-| --- | --- | --- |
-| `MIC_ARRAY_SERIAL` | Dispositivo serie que emite tramas de ángulo de activación | `/dev/wheeltec_mic` |
-| `MIC_ARRAY_SERIAL_BAUD` | Baudios para el UART del arreglo de micrófonos | `115200` |
-| `MIC_ARRAY_AUDIO_DEVICE` | ID o nombre de dispositivo ALSA pasado a `sounddevice` | predeterminado del sistema |
-| `MIC_ARRAY_SAMPLE_RATE` | Tasa de muestreo de captura (Hz) | `16000` |
-| `MIC_ARRAY_CHUNK` | Muestras por chunk | `2048` |
-| `MIC_ARRAY_CHANNELS` | Número de canales (1 = mono) | `1` |
-| `MIC_ARRAY_RECORDING_DIR` | Directorio para guardar grabaciones WAV | `mic_array_dashboard/recordings` |
-| `MIC_ARRAY_SIMULATE_AUDIO` | Emite audio sintético de onda sinusoidal | `0` |
-| `MIC_ARRAY_SIMULATE_DIRECTION` | Emite ángulos de activación simulados | `0` |
-| `MIC_ARRAY_SILENCE_THRESHOLD` | Umbral de `level` para estado speaking/silence | `0.12` |
-| `MIC_ARRAY_WAVEFORM_BARS` | Número de barras de forma de onda enviadas por chunk | `72` |
-| `MIC_ARRAY_MAX_CLIENTS` | Máximo de clientes WebSocket concurrentes | `32` |
-| `MIC_ARRAY_WS_PATH` | Endpoint WebSocket | `/ws/stream` |
-| `MIC_ARRAY_HOST` | Host de enlace | `0.0.0.0` |
-| `MIC_ARRAY_PORT` | Puerto HTTP | `8080` |
-
 ## Uso
 
-### App web
+### Web app
 
 - UI principal: `http://localhost:8080`
-- Instálala como PWA desde el flujo de añadir a pantalla de inicio en Chrome/Edge/Safari
+- Instalar como PWA desde el flujo de añadir a pantalla de inicio de Chrome/Edge/Safari
 
-### API REST
+### REST API
 
 - `GET /api/status`
 - `POST /api/recordings/start`
@@ -176,15 +201,53 @@ curl -OJ http://localhost:8080/api/recordings/<session_id>/audio
 - Tipos de mensaje del servidor: `hello`, `waveform`, `direction`, `recording_started`, `recording_stopped`, `pong`
 - Comandos del cliente: `ping`, `start_recording`, `stop_recording`
 
-Payload de comando de ejemplo:
+Ejemplo de payload de comando:
 
 ```json
 {"command":"start_recording"}
 ```
 
+### Inicio rápido (desde código fuente)
+
+```bash
+MIC_ARRAY_SERIAL=/dev/wheeltec_mic \
+MIC_ARRAY_AUDIO_DEVICE="hw:1,0" \
+python -m mic_array_dashboard.backend.server
+```
+
+Para prototipado sin hardware:
+
+```bash
+MIC_ARRAY_SIMULATE_AUDIO=1 \
+MIC_ARRAY_SIMULATE_DIRECTION=1 \
+python -m mic_array_dashboard.backend.server
+```
+
+## Configuración
+
+Las variables de entorno se definen en `mic_array_dashboard/backend/config.py`.
+
+| Variable | Descripción | Predeterminado |
+| --- | --- | --- |
+| `MIC_ARRAY_SERIAL` | Dispositivo serial que emite frames de ángulo de activación | `/dev/wheeltec_mic` |
+| `MIC_ARRAY_SERIAL_BAUD` | Baud rate serial | `115200` |
+| `MIC_ARRAY_AUDIO_DEVICE` | ID/nombre del dispositivo ALSA pasado a `sounddevice` | valor predeterminado del sistema |
+| `MIC_ARRAY_SAMPLE_RATE` | Tasa de muestreo de captura (Hz) | `16000` |
+| `MIC_ARRAY_CHUNK` | Muestras por bloque de audio | `2048` |
+| `MIC_ARRAY_CHANNELS` | Número de canales (1 = mono) | `1` |
+| `MIC_ARRAY_RECORDING_DIR` | Directorio para capturas WAV | `mic_array_dashboard/recordings` |
+| `MIC_ARRAY_SIMULATE_AUDIO` | Emitir audio sintético | `0` |
+| `MIC_ARRAY_SIMULATE_DIRECTION` | Emitir datos de ángulo sintéticos | `0` |
+| `MIC_ARRAY_SILENCE_THRESHOLD` | Umbral de voz/silencio | `0.12` |
+| `MIC_ARRAY_WAVEFORM_BARS` | Número de barras de forma de onda enviadas por frame | `72` |
+| `MIC_ARRAY_MAX_CLIENTS` | Máximo de clientes WebSocket concurrentes | `32` |
+| `MIC_ARRAY_WS_PATH` | Ruta de WebSocket | `/ws/stream` |
+| `MIC_ARRAY_HOST` | Host de enlace | `0.0.0.0` |
+| `MIC_ARRAY_PORT` | Puerto HTTP | `8080` |
+
 ## Ejemplos
 
-### 1) Ejecutar en modo debug con autoreload
+### Modo debug con autoreload
 
 ```bash
 MIC_ARRAY_DEBUG=1 \
@@ -193,14 +256,14 @@ MIC_ARRAY_SIMULATE_DIRECTION=1 \
 python -m mic_array_dashboard.backend.server
 ```
 
-### 2) Guardar grabaciones fuera del repositorio
+### Guardar grabaciones fuera del repositorio
 
 ```bash
 MIC_ARRAY_RECORDING_DIR=/data/ideasrobot/recordings \
 python -m mic_array_dashboard.backend.server
 ```
 
-### 3) Exponer a la red local
+### Exponer servicio en red local
 
 ```bash
 MIC_ARRAY_HOST=0.0.0.0 MIC_ARRAY_PORT=8080 \
@@ -209,27 +272,29 @@ python -m mic_array_dashboard.backend.server
 
 ## Notas de desarrollo
 
-- Ejecuta `MIC_ARRAY_DEBUG=1` durante iteración para habilitar autoreload de Tornado y logging detallado.
+- Ejecuta con `MIC_ARRAY_DEBUG=1` mientras iteras para obtener logs detallados y comportamiento de autoreload.
 - La captura de audio depende de ALSA; ejecuta `python -m sounddevice` para listar índices de dispositivos.
-- Los archivos frontend viven en `frontend/public`; editar `styles.css` o `app.js` solo requiere refrescar el navegador.
-- Amplía el comportamiento backend en `mic_array_dashboard/backend/server.py` (handlers + forma de mensajes).
-- Amplía la integración de sensores mediante adaptadores en `mic_array_dashboard/backend/device/`.
+- Los archivos frontend están en `frontend/public`; editar `styles.css` o `app.js` normalmente solo requiere refrescar el navegador tras reiniciar.
+- Amplía el comportamiento del backend en `mic_array_dashboard/backend/server.py` (handlers y formato de mensajes).
+- Amplía los adaptadores de sensores en `mic_array_dashboard/backend/device/`.
 - El backend crea automáticamente `mic_array_dashboard/recordings/` si no existe.
 
 ## Sitio web
 
-- La landing estática vive en `docs/` (HTML/CSS/JS).
-- Configura GitHub Pages para servir `/docs` en `main`.
-- Mantén `docs/CNAME` con el valor `robot.lazying.art`.
+- El sitio marketing/estático vive en `docs/` (HTML/CSS/JS).
+- Configura GitHub Pages para servir `/docs` en la rama `main`.
+- Mantén `docs/CNAME` con `robot.lazying.art` cuando despliegues ese dominio.
 
-## Notas del SDK heredado/del fabricante
+## Notas del SDK de proveedor y legado
 
-El repositorio incluye materiales completos del SDK de Wheeltec y recursos heredados de Raspberry Pi para compilaciones de bajo nivel y validación de protocolo:
+Este repositorio incluye software runtime y artefactos legacy del proveedor, incluyendo:
 
 - `M2系列麦克风语音阵列客户资料/.../3.Linux_SDK与使用教程/...`
 - `raspberrypi_legacy/`
 
-Flujo de compilación de ejemplo desde demos del SDK (tal como se documenta en las notas incluidas):
+Esto incluye flujos antiguos de ASR sin conexión y VAD; usa el backend actual en Python como runtime activo para el desarrollo del dashboard.
+
+Flujo de compilación de ejemplo para comprobaciones de compatibilidad:
 
 ```bash
 cd .../offline_mic/samples/asr_offline_record_sample
@@ -247,79 +312,44 @@ make LINUX_ARM64=1
 export LD_LIBRARY_PATH=../libs/arm64:$LD_LIBRARY_PATH
 ```
 
+Al trabajar con reglas USB del proveedor, vuelve a ejecutar `ch9102_udev.sh` y desconecta/conecta el dispositivo si `/dev/wheeltec_mic` desaparece.
+
 ## Solución de problemas
 
-| Síntoma | Causa probable / solución |
+| Síntoma | Causa probable / corrección |
 | --- | --- |
-| `libmsc.so: cannot open shared object file` | Configura `LD_LIBRARY_PATH` al directorio SDK `libs/<arch>` correspondiente. |
-| Errores de dispositivo ALSA | Verifica el índice con `arecord -l` y revisa `MIC_ARRAY_AUDIO_DEVICE`. |
-| Falta `/dev/wheeltec_mic` | Vuelve a ejecutar `ch9102_udev.sh`, reconecta el dispositivo y verifica membresía del grupo `dialout`. |
-| Sin telemetría en la UI | Confirma que la ruta WebSocket coincide con `MIC_ARRAY_WS_PATH` y habilita flags de simulación cuando no haya hardware conectado. |
-| No aparece el aviso de instalación PWA | Asegura HTTPS/origen público en producción y un `manifest.json` válido + enrutado del service worker. |
+| `libmsc.so: cannot open shared object file` | Ajusta `LD_LIBRARY_PATH` al directorio de librerías del SDK correspondiente (`libs/<arch>`). |
+| Errores de entrada ALSA | Verifica el dispositivo con `arecord -l` y actualiza `MIC_ARRAY_AUDIO_DEVICE`. |
+| Falta `/dev/wheeltec_mic` | Vuelve a ejecutar `ch9102_udev.sh`, reconecta el dispositivo y verifica la pertenencia al grupo `dialout`. |
+| Sin telemetría en la UI | Asegúrate de que la ruta WebSocket coincida con `MIC_ARRAY_WS_PATH`; usa flags de simulación si no hay hardware conectado. |
+| No aparece el aviso de instalación de PWA | Asegura origen HTTPS/público en producción y una configuración válida de `manifest.json` + service worker. |
 
 ## Hoja de ruta
 
-- Añadir paneles de stream de cámara y fusión de eventos con telemetría de ángulo de activación.
-- Añadir puentes de automatización para flujos de OnlyIdeas (integraciones MQTT/eventos).
-- Añadir persistencia/analítica para historial de forma de onda + dirección.
-- Mejorar plantillas de despliegue (proxy inverso + unidades de servicio).
-- Ampliar cobertura de compatibilidad de protocolo para futuras revisiones de firmware del arreglo de micrófonos.
+- Añadir paneles de stream de cámara y fusión de eventos con la telemetría de ángulo de activación.
+- Añadir puentes de automatización para flujos de estilo OnlyIdeas (integración MQTT/eventos).
+- Añadir persistencia y analítica para historial de forma de onda + dirección.
+- Mejorar plantillas de despliegue (unidades de servicio + ejemplos de reverse proxy).
+- Expandir compatibilidad de protocolo para futuras revisiones de firmware del arreglo de micrófonos.
 
 ## Contribución
 
-- Consulta `AGENTS.md` para las directrices de contribución.
-- Prefiere pull requests pequeños y enfocados, con pasos de reproducción claros.
-- Incluye contexto de hardware/SO y comandos ejecutados para cambios que afecten al runtime.
-- Si modificas referencias del SDK del fabricante, mantén `references/SDK_NOTES.md` sincronizado.
+- Consulta `AGENTS.md` para convenciones de colaboradores y requisitos sensibles al hardware.
+- Prefiere pull requests pequeñas y enfocadas con pasos de reproducción claros.
+- Incluye contexto de hardware/OS y comandos ejecutados ante cualquier cambio que afecte runtime.
+- Si se tocan referencias del SDK del proveedor, mantén actualizado `references/SDK_NOTES.md`.
 
-Nota: actualmente no existe un `CONTRIBUTING.md` dedicado en este repositorio.
-
-## Donaciones y soporte
-
-Tu apoyo mantiene abierta la caja de herramientas de IdeasRobot, financia el prototipado de dispositivos y ayuda a subvencionar despliegues comunitarios. Puedes donar a través de cualquiera de los siguientes enlaces:
-
-- GitHub Sponsors: https://github.com/sponsors/lachlanchen
-- LazyingArt: https://lazying.art
-- EchoMind (chat): https://chat.lazying.art
-- OnlyIdeas: https://onlyideas.art
-
-<div align="center">
-<table style="margin:0 auto; text-align:center; border-collapse:collapse;">
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://chat.lazying.art/donate">https://chat.lazying.art/donate</a>
-    </td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://chat.lazying.art/donate"><img src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_button.svg" alt="Donate" height="44"></a>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://paypal.me/RongzhouChen">
-        <img src="https://img.shields.io/badge/PayPal-Donate-003087?logo=paypal&logoColor=white" alt="Donate with PayPal">
-      </a>
-    </td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400">
-        <img src="https://img.shields.io/badge/Stripe-Donate-635bff?logo=stripe&logoColor=white" alt="Donate with Stripe">
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><strong>WeChat</strong></td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><strong>Alipay</strong></td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><img alt="WeChat QR" src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_wechat.png" width="240"/></td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><img alt="Alipay QR" src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_alipay.png" width="240"/></td>
-  </tr>
-</table>
-</div>
-
-ありがとうございます · 谢谢你 · Gracias por ayudar a IdeasRobot a aprender, escuchar y compartir con mayor apertura.
+Nota: en este repositorio todavía no existe un archivo `CONTRIBUTING.md` dedicado.
 
 ## Licencia
 
-El estado del archivo de licencia no está claro actualmente en este repositorio: en el momento de redacción no hay un archivo `LICENSE` en la raíz.
+El estado de la licencia de este repositorio sigue sin estar claro: en esta instantánea de trabajo no existe un archivo `LICENSE` en la raíz.
 
-Suposición para contribuidores: tratar el código/recursos como propiedad de los dueños del repositorio, salvo que se añada o aclare un archivo de licencia en una actualización futura.
+Supuesto para colaboradores: trata el código y los activos como propiedad del propietario del repositorio hasta que se añada o aclare una licencia en una actualización futura.
+
+
+## ❤️ Support
+
+| Donate | PayPal | Stripe |
+| --- | --- | --- |
+| [![Donate](https://camo.githubusercontent.com/24a4914f0b42c6f435f9e101621f1e52535b02c225764b2f6cc99416926004b7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446f6e6174652d4c617a79696e674172742d3045413545393f7374796c653d666f722d7468652d6261646765266c6f676f3d6b6f2d6669266c6f676f436f6c6f723d7768697465)](https://chat.lazying.art/donate) | [![PayPal](https://camo.githubusercontent.com/d0f57e8b016517a4b06961b24d0ca87d62fdba16e18bbdb6aba28e978dc0ea21/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f50617950616c2d526f6e677a686f754368656e2d3030343537433f7374796c653d666f722d7468652d6261646765266c6f676f3d70617970616c266c6f676f436f6c6f723d7768697465)](https://paypal.me/RongzhouChen) | [![Stripe](https://camo.githubusercontent.com/1152dfe04b6943afe3a8d2953676749603fb9f95e24088c92c97a01a897b4942/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5374726970652d446f6e6174652d3633354246463f7374796c653d666f722d7468652d6261646765266c6f676f3d737472697065266c6f676f436f6c6f723d7768697465)](https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400) |

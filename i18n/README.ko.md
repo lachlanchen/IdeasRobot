@@ -1,9 +1,7 @@
 [English](../README.md) · [العربية](README.ar.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Tiếng Việt](README.vi.md) · [中文 (简体)](README.zh-Hans.md) · [中文（繁體）](README.zh-Hant.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
 
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/logos/banner.png" alt="LazyingArt banner" />
-</p>
+[![LazyingArt banner](https://github.com/lachlanchen/lachlanchen/raw/main/figs/banner.png)](https://github.com/lachlanchen/lachlanchen/blob/main/figs/banner.png)
 
 # IdeasRobot
 
@@ -13,27 +11,63 @@
 ![Hardware](https://img.shields.io/badge/Hardware-Wheeltec%20M2-3c8c3c)
 ![OS](https://img.shields.io/badge/OS-Linux-FCC624?logo=linux&logoColor=111)
 ![Status](https://img.shields.io/badge/Project-Active%20Runtime%20%2B%20Vendor%20Assets-2f855a)
+![Stars](https://img.shields.io/github/stars/lachlanchen/IdeasRobot?label=Stars&logo=github&style=flat-square)
+![Forks](https://img.shields.io/github/forks/lachlanchen/IdeasRobot?label=Forks&logo=github&style=flat-square)
+![Last%20Commit](https://img.shields.io/github/last-commit/lachlanchen/IdeasRobot?label=Last%20Commit&logo=git&style=flat-square)
 
-IdeasRobot는 *The Art of Lazying* 및 *OnlyIdeas*에서 영감을 받은, 여유로운 마이크+카메라 콘솔입니다. Wheeltec M2 마이크 어레이(또는 시뮬레이터)와 통신하는 Tornado 백엔드와, 어디서든 파형 에너지 스트리밍, 웨이크 각도 텔레메트리 확인, 원탭 녹음을 지원하는 설치형 PWA/Android/iOS UI를 결합했습니다.
+IdeasRobot는 *The Art of Lazying*와 *OnlyIdeas*에서 영감받은 편안한 음성/카메라 콘솔입니다. Wheeltec M2 마이크 배열(또는 시뮬레이터)과 통신하는 Tornado 백엔드와, 파형 에너지, 웨이크 각도 텔레메트리, 원탭 녹음을 위한 설치형 PWA/Android/iOS UI를 제공합니다.
+
+## 빠른 사실
+
+| 영역 | 세부 내용 |
+| --- | --- |
+| 저장소 역할 | 런타임 데모 + 벤더/레거시 SDK 참조 |
+| 런타임 스택 | Tornado 백엔드 + WebSocket + REST + 설치형 프론트엔드 |
+| 하드웨어 경로 | `UART` + `ALSA` 폴백 시뮬레이션을 지원하는 Wheeltec M2 배열 |
+| 검증 자산 | `mic_array_dashboard/recordings`, `docs`, `M2` SDK 참조 트리 |
+
+## 목차
+
+- [빠른 사실](#빠른-사실)
+- [개요](#개요)
+- [기능](#기능)
+- [프로젝트 구조](#프로젝트-구조)
+- [전제 조건](#전제-조건)
+- [설치](#설치)
+- [사용법](#사용법)
+  - [웹 앱](#웹-앱)
+  - [REST API](#rest-api)
+  - [WebSocket 계약](#websocket-계약)
+- [설정](#설정)
+- [예시](#예시)
+- [개발 노트](#개발-노트)
+- [웹사이트](#웹사이트)
+- [레거시 및 벤더 SDK 노트](#레거시-및-벤더-sdk-노트)
+- [문제 해결](#문제-해결)
+- [로드맵](#로드맵)
+- [기여](#기여)
+- [Support](#-support)
+- [라이선스](#라이선스)
 
 ## 개요
 
-IdeasRobot는 하나의 저장소에서 다음 세 계층을 함께 제공합니다.
+IdeasRobot는 한 저장소에서 세 가지 계층을 결합합니다.
 
-- 실시간 제어 런타임: `mic_array_dashboard/backend` (Tornado + WebSocket + REST).
-- 설치형 클라이언트 앱: `mic_array_dashboard/frontend/public` (Android/iOS/Desktop용 PWA).
-- 하드웨어/벤더 레퍼런스: Wheeltec SDK 번들, Raspberry Pi 레거시 통합 경로, 더 넓은 로봇 시스템으로 확장하기 위한 아키텍처 노트.
+- `mic_array_dashboard/backend`의 실시간 제어 런타임 (Tornado + WebSocket + REST).
+- `mic_array_dashboard/frontend/public`의 설치형 클라이언트 UI (Android/iOS/Desktop용 PWA).
+- `M2系列麦克风语音阵列客户资料*`, Raspberry Pi 레거시 자산, 그리고 저수준 확장용 프로토콜 메모를 담은 하드웨어/벤더 참고 자료.
 
-이 저장소는 의도적으로 혼합형으로 구성되어 있습니다. 즉, 실제 동작 코드와 저수준 bring-up에 필요한 벤더/레거시 자산을 함께 포함합니다.
+이 저장소는 의도적으로 혼합 구조로 구성되어 있습니다. 즉, 활성 런타임 코드와 함께 하드웨어 초기화에 필요한 벤더/레거시 자산을 함께 유지합니다.
 
-## 주요 기능
+## 기능
 
-| Capability | Description |
+| 기능 | 설명 |
 | --- | --- |
-| 🎛️ 실시간 제어 허브 | `/ws/stream`이 파형 바, SILENCE/SPEAKING 상태, 웨이크 각도를 푸시하며 `/api/*`는 상태 및 녹음을 담당합니다. |
-| 🔌 하드웨어 인지형 설계 | ALSA 입력(`sounddevice` 사용)과 벤더 UART 패킷을 유연한 폴백과 함께 감싸 하드웨어 없이도 개발할 수 있습니다. |
-| 📱 어디서나 PWA | Android/iOS/Desktop에 설치 가능하며, 네온 스타일 파형, 나침반 기반 방향 시각화, 오프라인 캐시를 제공합니다. |
-| 🤖 로봇 확장 준비 | 마이크 어레이 + 카메라 + 모터 + OnlyIdeas 자동화를 결합하는 향후 IdeasRobot 빌드의 센서 프런트엔드로 설계되었습니다. |
+| 🎛️ 실시간 제어 허브 | `Tornado` 백엔드는 파형 바, SILENCE/SPEAKING 상태, 웨이크 각도 텔레메트리, 녹음 이벤트를 스트리밍하고, 상태 조회 및 오디오 조회를 위한 REST 엔드포인트를 제공합니다. |
+| 🔌 하드웨어 인식 | ALSA 오디오 입력과 직렬 UART 패킷은 시뮬레이션 폴백 경로와 함께 래핑되어, 물리 하드웨어가 없어도 개발을 계속할 수 있습니다. |
+| 📱 어디서나 PWA | 프런트엔드는 Android/iOS/Desktop에 설치 가능하며, 파형·방향 표시·서비스 워커 자산을 통한 오프라인 캐시 동작을 포함합니다. |
+| 🤖 로봇 연동 준비 | 카메라, 모션 모듈, 자동화 워크플로우를 갖춘 향후 IdeasRobot 시스템에 적합한 센서형 프런트엔드로 설계되었습니다. |
+| 📚 레퍼런스 풍부 | 문서, 벤더 SDK 자료, 레거시 Raspberry Pi 경로를 한 저장소에 포함해 실험과 트러블슈팅 속도를 높입니다. |
 
 ## 프로젝트 구조
 
@@ -41,39 +75,64 @@ IdeasRobot는 하나의 저장소에서 다음 세 계층을 함께 제공합니
 .
 ├── README.md
 ├── AGENTS.md
-├── i18n/                          # 다국어 README 변형
+├── i18n/
+│   ├── README.ar.md
+│   ├── README.de.md
+│   ├── README.es.md
+│   ├── README.fr.md
+│   ├── README.ja.md
+│   ├── README.ko.md
+│   ├── README.ru.md
+│   ├── README.vi.md
+│   ├── README.zh-Hans.md
+│   └── README.zh-Hant.md
 ├── references/
-│   ├── ARCHITECTURE.md            # 백엔드/프런트엔드 프로토콜 및 컴포넌트 상세
-│   └── SDK_NOTES.md               # Linux/Raspberry Pi SDK 심화 노트
-├── docs/                          # GitHub Pages 정적 랜딩
+│   ├── ARCHITECTURE.md
+│   └── SDK_NOTES.md
+├── docs/
 ├── mic_array_dashboard/
 │   ├── backend/
-│   │   ├── server.py              # 메인 런타임 엔트리포인트
-│   │   ├── config.py              # 환경 변수 기반 설정
+│   │   ├── server.py
+│   │   ├── config.py
 │   │   ├── requirements.txt
 │   │   └── device/
 │   │       ├── audio_capture.py
 │   │       └── direction_reader.py
-│   ├── frontend/public/           # PWA 파일
-│   └── recordings/                # 런타임 WAV 출력
-├── raspberrypi_legacy/            # 레거시 Raspberry Pi 워크플로와 스크립트
-└── M2系列麦克风语音阵列客户资料/    # 벤더 SDK 아카이브 및 매뉴얼
+│   ├── frontend/
+│   │   └── public/
+│   │       ├── index.html
+│   │       ├── app.js
+│   │       ├── styles.css
+│   │       ├── manifest.json
+│   │       ├── service-worker.js
+│   │       └── icons/
+│   ├── recordings/
+│   └── README.md
+├── M2系列麦克风语音阵列客户资料/
+│   └── M2系列麦克风语音阵列客户资料V5.1_20231128/
+├── raspberrypi_legacy/
+├── figs/
+└── .auto-readme-work/
+    └── 20260301_071231/
+        ├── pipeline-context.md
+        ├── repo-structure-analysis.md
+        └── translation-plan.txt
 ```
 
 상세 문서:
 
-- [Architecture overview](references/ARCHITECTURE.md)
-- [Wheeltec SDK deep notes](references/SDK_NOTES.md)
+- [아키텍처 개요](references/ARCHITECTURE.md)
+- [Wheeltec SDK 노트](references/SDK_NOTES.md)
 
-## 사전 요구사항
+## 전제 조건
 
-### 런타임(대시보드)
+### 런타임 백엔드
 
 - Python 3.x
-- ALSA 오디오 스택이 있는 Linux
-- 하드웨어 모드용 마이크 어레이 시리얼 엔드포인트(일반적으로 `/dev/wheeltec_mic`)
+- ALSA 오디오 스택이 포함된 Linux
+- 하드웨어 모드용 마이크 배열 직렬 엔드포인트(일반적으로 `/dev/wheeltec_mic`)
 
-### 선택적 시스템 패키지(권장)
+### 선택적 시스템 패키지 (권장)
 
 ```bash
 sudo apt update
@@ -81,77 +140,43 @@ sudo apt install build-essential cmake libasound2-dev libpthread-stubs0-dev \
                  libssl-dev python3-pip python3-venv alsa-utils
 ```
 
-### 하드웨어 이름 고정 도우미(벤더 스크립트)
+### 하드웨어 명명 보조 도구 (벤더 워크플로우)
 
-커널/USB 브리지 업데이트 후에는 벤더 SDK 경로의 udev 도우미를 다시 실행해 `/dev/wheeltec_mic`가 계속 유지되도록 하세요.
+커널/USB 브릿지 변경 후에도 `/dev/wheeltec_mic`이 계속 노출되도록 SDK 자산에 있는 유틸리티를 다시 실행하세요.
 
 ```bash
-# bundled SDK 자산 내부 경로 예시:
-# .../offline_mic/scripts/ch9102_udev.sh
+# 예시 (SDK 경로는 환경에 따라 달라질 수 있음):
+cd .../offline_mic/scripts
 sudo bash ch9102_udev.sh
 ```
+
+### 저장소 가정 사항
+
+- 이 스냅샷에는 최상위 라이선스 파일이 없어, 라이선스 항목은 추가 전까지 미정으로 간주합니다.
+- 일부 대형 벤더/레거시 트리는 아카이브 참조용이며 런타임 코드와 동일한 릴리스 주기 대상이 아닙니다.
 
 ## 설치
 
 ```bash
 git clone https://github.com/lachlanchen/IdeasRobot.git
 cd IdeasRobot/mic_array_dashboard/backend
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-의존성(`requirements.txt` 기준):
+`requirements.txt`에 정의된 의존성:
 
 - `tornado>=6.3`
 - `pyserial>=3.5`
 - `sounddevice>=0.4`
-
-## 빠른 시작
-
-```bash
-MIC_ARRAY_SERIAL=/dev/wheeltec_mic \
-MIC_ARRAY_AUDIO_DEVICE="hw:1,0" \
-python -m mic_array_dashboard.backend.server
-```
-
-콘솔을 보거나 PWA로 설치하려면 `http://localhost:8080`을 여세요.
-
-하드웨어 없이 프로토타이핑하려면:
-
-```bash
-MIC_ARRAY_SIMULATE_AUDIO=1 \
-MIC_ARRAY_SIMULATE_DIRECTION=1 \
-python -m mic_array_dashboard.backend.server
-```
-
-## 설정
-
-환경 변수는 `mic_array_dashboard/backend/config.py`에 정의되어 있습니다.
-
-| Variable | Description | Default |
-| --- | --- | --- |
-| `MIC_ARRAY_SERIAL` | 웨이크 각도 프레임을 내보내는 시리얼 장치 | `/dev/wheeltec_mic` |
-| `MIC_ARRAY_SERIAL_BAUD` | 마이크 어레이 UART 보드레이트 | `115200` |
-| `MIC_ARRAY_AUDIO_DEVICE` | `sounddevice`에 전달되는 ALSA 장치 id 또는 이름 | system default |
-| `MIC_ARRAY_SAMPLE_RATE` | 캡처 샘플 레이트(Hz) | `16000` |
-| `MIC_ARRAY_CHUNK` | 청크당 샘플 수 | `2048` |
-| `MIC_ARRAY_CHANNELS` | 채널 수(1 = mono) | `1` |
-| `MIC_ARRAY_RECORDING_DIR` | WAV 녹음 저장 디렉터리 | `mic_array_dashboard/recordings` |
-| `MIC_ARRAY_SIMULATE_AUDIO` | 합성 사인파 오디오 출력 | `0` |
-| `MIC_ARRAY_SIMULATE_DIRECTION` | 가짜 웨이크 각도 출력 | `0` |
-| `MIC_ARRAY_SILENCE_THRESHOLD` | 발화/무음 상태용 `level` 임계값 | `0.12` |
-| `MIC_ARRAY_WAVEFORM_BARS` | 청크당 전송할 파형 바 개수 | `72` |
-| `MIC_ARRAY_MAX_CLIENTS` | 동시 WebSocket 클라이언트 최대 수 | `32` |
-| `MIC_ARRAY_WS_PATH` | WebSocket 엔드포인트 | `/ws/stream` |
-| `MIC_ARRAY_HOST` | 바인딩 호스트 | `0.0.0.0` |
-| `MIC_ARRAY_PORT` | HTTP 포트 | `8080` |
 
 ## 사용법
 
 ### 웹 앱
 
 - 메인 UI: `http://localhost:8080`
-- Chrome/Edge/Safari의 홈 화면 추가 흐름으로 PWA 설치
+- Chrome/Edge/Safari의 홈 화면에 추가 흐름에서 PWA로 설치
 
 ### REST API
 
@@ -182,9 +207,47 @@ curl -OJ http://localhost:8080/api/recordings/<session_id>/audio
 {"command":"start_recording"}
 ```
 
-## 예제
+### 소스에서 빠르게 시작
 
-### 1) 자동 리로드로 디버그 모드 실행
+```bash
+MIC_ARRAY_SERIAL=/dev/wheeltec_mic \
+MIC_ARRAY_AUDIO_DEVICE="hw:1,0" \
+python -m mic_array_dashboard.backend.server
+```
+
+하드웨어 없이 프로토타이핑:
+
+```bash
+MIC_ARRAY_SIMULATE_AUDIO=1 \
+MIC_ARRAY_SIMULATE_DIRECTION=1 \
+python -m mic_array_dashboard.backend.server
+```
+
+## 설정
+
+환경 변수는 `mic_array_dashboard/backend/config.py`에 정의되어 있습니다.
+
+| 변수 | 설명 | 기본값 |
+| --- | --- | --- |
+| `MIC_ARRAY_SERIAL` | 웨이크 각도 프레임을 송신하는 직렬 장치 | `/dev/wheeltec_mic` |
+| `MIC_ARRAY_SERIAL_BAUD` | 직렬 통신 보드레이트 | `115200` |
+| `MIC_ARRAY_AUDIO_DEVICE` | `sounddevice`에 전달되는 ALSA 장치 ID/이름 | 시스템 기본값 |
+| `MIC_ARRAY_SAMPLE_RATE` | 캡처 샘플링 속도 (Hz) | `16000` |
+| `MIC_ARRAY_CHUNK` | 오디오 청크당 샘플 수 | `2048` |
+| `MIC_ARRAY_CHANNELS` | 채널 수 (1 = 모노) | `1` |
+| `MIC_ARRAY_RECORDING_DIR` | WAV 캡처 저장 디렉터리 | `mic_array_dashboard/recordings` |
+| `MIC_ARRAY_SIMULATE_AUDIO` | 합성 오디오 출력 | `0` |
+| `MIC_ARRAY_SIMULATE_DIRECTION` | 합성 각도 데이터 출력 | `0` |
+| `MIC_ARRAY_SILENCE_THRESHOLD` | 말하기/무음 임계값 | `0.12` |
+| `MIC_ARRAY_WAVEFORM_BARS` | 프레임당 전송되는 파형 바 개수 | `72` |
+| `MIC_ARRAY_MAX_CLIENTS` | 동시 WebSocket 최대 클라이언트 수 | `32` |
+| `MIC_ARRAY_WS_PATH` | WebSocket 경로 | `/ws/stream` |
+| `MIC_ARRAY_HOST` | 바인딩 호스트 | `0.0.0.0` |
+| `MIC_ARRAY_PORT` | HTTP 포트 | `8080` |
+
+## 예시
+
+### 자동 재로드가 포함된 디버그 모드
 
 ```bash
 MIC_ARRAY_DEBUG=1 \
@@ -193,14 +256,14 @@ MIC_ARRAY_SIMULATE_DIRECTION=1 \
 python -m mic_array_dashboard.backend.server
 ```
 
-### 2) 저장소 외부에 녹음 파일 저장
+### 저장소 외부에 녹음 저장
 
 ```bash
 MIC_ARRAY_RECORDING_DIR=/data/ideasrobot/recordings \
 python -m mic_array_dashboard.backend.server
 ```
 
-### 3) 로컬 네트워크로 노출
+### 로컬 네트워크에 서비스 노출
 
 ```bash
 MIC_ARRAY_HOST=0.0.0.0 MIC_ARRAY_PORT=8080 \
@@ -209,27 +272,29 @@ python -m mic_array_dashboard.backend.server
 
 ## 개발 노트
 
-- 개발 중에는 `MIC_ARRAY_DEBUG=1`을 사용해 Tornado 자동 리로드와 상세 로깅을 활성화하세요.
-- 오디오 캡처는 ALSA에 의존합니다. 장치 인덱스는 `python -m sounddevice`로 확인하세요.
-- 프런트엔드 파일은 `frontend/public`에 있으며, `styles.css` 또는 `app.js` 수정 시 브라우저 새로고침만으로 반영됩니다.
-- 백엔드 동작 확장은 `mic_array_dashboard/backend/server.py`(핸들러 + 메시지 구성)에서 진행하세요.
-- 센서 통합 확장은 `mic_array_dashboard/backend/device/` 어댑터를 통해 수행하세요.
-- 백엔드는 `mic_array_dashboard/recordings/`가 없으면 자동으로 생성합니다.
+- 반복 작업 시 `MIC_ARRAY_DEBUG=1`을 사용하면 상세 로그와 자동 재로드 동작을 볼 수 있습니다.
+- 오디오 캡처는 ALSA에 의존합니다. 장치 인덱스를 보려면 `python -m sounddevice`를 실행하세요.
+- 프런트엔드 파일은 `frontend/public`에 있으며, `styles.css` 또는 `app.js` 수정 시 보통 재시작 후 브라우저 새로고침만 필요합니다.
+- 백엔드 동작은 `mic_array_dashboard/backend/server.py`(핸들러와 메시지 형성)에서 확장하세요.
+- 센서 어댑터는 `mic_array_dashboard/backend/device/`에서 확장하세요.
+- 백엔드는 누락된 경우 `mic_array_dashboard/recordings/`를 자동 생성합니다.
 
 ## 웹사이트
 
-- 정적 랜딩 페이지는 `docs/` 아래에 있습니다(HTML/CSS/JS).
-- GitHub Pages가 `main` 브랜치의 `/docs`를 서비스하도록 설정하세요.
-- `docs/CNAME`은 `robot.lazying.art`로 유지하세요.
+- 마케팅/정적 사이트는 `docs/` 하위에 있습니다 (HTML/CSS/JS).
+- GitHub Pages를 `main` 브랜치의 `/docs`를 서빙하도록 설정하세요.
+- 도메인을 배포할 때는 `docs/CNAME`을 `robot.lazying.art`로 유지하세요.
 
-## 레거시/벤더 SDK 노트
+## 레거시 및 벤더 SDK 노트
 
-이 저장소에는 저수준 빌드 및 프로토콜 검증을 위한 Wheeltec SDK 전체 자료와 Raspberry Pi 레거시 자산이 포함되어 있습니다.
+이 저장소에는 실행 런타임 소프트웨어와 벤더/레거시 아티팩트가 함께 포함되어 있습니다.
 
 - `M2系列麦克风语音阵列客户资料/.../3.Linux_SDK与使用教程/...`
 - `raspberrypi_legacy/`
 
-SDK 데모의 샘플 빌드 흐름(번들 노트 문서 기준):
+여기에는 이전 오프라인 ASR 레코더와 VAD 플로우가 포함됩니다. 대시보드 개발의 활성 런타임은 최신 Python 백엔드를 사용하세요.
+
+호환성 확인을 위한 샘플 SDK 빌드 흐름:
 
 ```bash
 cd .../offline_mic/samples/asr_offline_record_sample
@@ -247,79 +312,44 @@ make LINUX_ARM64=1
 export LD_LIBRARY_PATH=../libs/arm64:$LD_LIBRARY_PATH
 ```
 
+벤더 USB 규칙 작업 시 `ch9102_udev.sh`를 다시 실행하고 장치가 사라지면 재연결하세요.
+
 ## 문제 해결
 
-| Symptom | Likely cause / fix |
+| 증상 | 가능성 있는 원인 / 해결 |
 | --- | --- |
-| `libmsc.so: cannot open shared object file` | `LD_LIBRARY_PATH`를 해당 SDK `libs/<arch>` 디렉터리로 설정하세요. |
-| ALSA 장치 오류 | `arecord -l`로 인덱스를 확인하고 `MIC_ARRAY_AUDIO_DEVICE`를 점검하세요. |
-| `/dev/wheeltec_mic` 누락 | `ch9102_udev.sh`를 다시 실행하고 장치를 재연결한 뒤 `dialout` 그룹 권한을 확인하세요. |
-| UI에 텔레메트리가 없음 | WebSocket 경로가 `MIC_ARRAY_WS_PATH`와 일치하는지 확인하고, 하드웨어가 없으면 시뮬레이션 플래그를 켜세요. |
-| PWA 설치 프롬프트가 뜨지 않음 | 운영 환경에서 HTTPS/공개 오리진을 사용하고 `manifest.json`과 서비스 워커 라우팅이 유효한지 확인하세요. |
+| `libmsc.so: cannot open shared object file` | `LD_LIBRARY_PATH`를 해당 아키텍처 라이브러리 경로(`libs/<arch>`)로 설정하세요. |
+| ALSA 입력 오류 | `arecord -l`로 장치를 확인하고 `MIC_ARRAY_AUDIO_DEVICE`를 갱신하세요. |
+| `/dev/wheeltec_mic`이 누락됨 | `ch9102_udev.sh`를 다시 실행하고 장치를 뽑았다 꽂은 뒤 `dialout` 권한을 확인하세요. |
+| UI에 텔레메트리 없음 | `MIC_ARRAY_WS_PATH`와 WebSocket 경로가 일치하는지 확인하고, 하드웨어 미연결 시 시뮬레이션 플래그를 사용하세요. |
+| PWA 설치 프롬프트가 없음 | 운영 환경의 HTTPS/공개 오리진과 유효한 `manifest.json` 및 서비스 워커 구성이 설정되어 있는지 확인하세요. |
 
 ## 로드맵
 
-- 웨이크 각도 텔레메트리와 결합한 카메라 스트림 패널 및 이벤트 융합 추가.
-- OnlyIdeas 워크플로용 자동화 브리지(MQTT/이벤트 통합) 추가.
-- 파형 + 방향 이력에 대한 영속 저장/분석 기능 추가.
-- 배포 템플릿(리버스 프록시 + 서비스 유닛) 개선.
-- 향후 마이크 어레이 펌웨어 개정에 대한 프로토콜 호환성 범위 확대.
+- 웨이크 각도 텔레메트리와 이벤트 퓨전하는 카메라 스트림 패널을 추가합니다.
+- OnlyIdeas 스타일 워크플로우를 위한 자동화 브릿지(MQTT/이벤트 통합)를 추가합니다.
+- 파형 + 방향 이력에 대한 영속성 및 분석 기능을 추가합니다.
+- 배포 템플릿을 개선합니다(서비스 유닛 + 리버스 프록시 예시).
+- 마이크 배열의 향후 펌웨어 개정과 호환성을 확장합니다.
 
 ## 기여
 
-- 기여 가이드는 `AGENTS.md`를 참고하세요.
-- 재현 단계가 명확한 작고 집중된 PR을 권장합니다.
-- 런타임에 영향을 주는 변경의 경우 하드웨어/OS 맥락과 실행한 명령을 포함하세요.
-- 벤더 SDK 레퍼런스를 변경했다면 `references/SDK_NOTES.md`와 동기화 상태를 유지하세요.
+- 기여 규칙과 하드웨어 인지 변경 요구사항은 `AGENTS.md`를 참고하세요.
+- 재현 단계가 명확한 작은 범위의 PR을 선호합니다.
+- 런타임에 영향을 주는 변경은 하드웨어/OS 맥락과 실행한 명령을 함께 포함하세요.
+- 벤더 SDK 참조를 수정할 경우 `references/SDK_NOTES.md`를 최신 상태로 유지하세요.
 
-참고: 현재 저장소에는 별도 `CONTRIBUTING.md`가 없습니다.
-
-## 후원 및 지원
-
-여러분의 지원은 IdeasRobot 툴박스를 개방적으로 유지하고, 디바이스 프로토타이핑 비용을 지원하며, 커뮤니티 배포를 돕는 데 사용됩니다. 아래 링크를 통해 후원할 수 있습니다.
-
-- GitHub Sponsors: https://github.com/sponsors/lachlanchen
-- LazyingArt: https://lazying.art
-- EchoMind (chat): https://chat.lazying.art
-- OnlyIdeas: https://onlyideas.art
-
-<div align="center">
-<table style="margin:0 auto; text-align:center; border-collapse:collapse;">
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://chat.lazying.art/donate">https://chat.lazying.art/donate</a>
-    </td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://chat.lazying.art/donate"><img src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_button.svg" alt="Donate" height="44"></a>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://paypal.me/RongzhouChen">
-        <img src="https://img.shields.io/badge/PayPal-Donate-003087?logo=paypal&logoColor=white" alt="Donate with PayPal">
-      </a>
-    </td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;">
-      <a href="https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400">
-        <img src="https://img.shields.io/badge/Stripe-Donate-635bff?logo=stripe&logoColor=white" alt="Donate with Stripe">
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><strong>WeChat</strong></td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><strong>Alipay</strong></td>
-  </tr>
-  <tr>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><img alt="WeChat QR" src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_wechat.png" width="240"/></td>
-    <td style="text-align:center; vertical-align:middle; padding:6px 12px;"><img alt="Alipay QR" src="https://raw.githubusercontent.com/lachlanchen/lachlanchen/main/figs/donate_alipay.png" width="240"/></td>
-  </tr>
-</table>
-</div>
-
-ありがとうございます · 谢谢你 · Thank you for helping the IdeasRobot learn, listen, and share more openly.
+참고: 현재 이 저장소에는 전용 `CONTRIBUTING.md` 파일이 없습니다.
 
 ## 라이선스
 
-현재 저장소의 라이선스 파일 상태는 명확하지 않습니다. 작성 시점 기준 최상위 `LICENSE` 파일이 없습니다.
+이 저장소의 라이선스 상태는 현재 불분명합니다. 작업 스냅샷에는 최상위 `LICENSE` 파일이 없습니다.
 
-기여자를 위한 가정: 향후 라이선스 파일이 추가되거나 명확히 고지되기 전까지, 코드/자산은 저장소 소유자의 독점 자산으로 취급하세요.
+기여자 전제: 향후 라이선스가 추가되거나 명확히 규정되기 전까지는 코드와 에셋을 저장소 소유자의 독점 자산으로 간주하세요.
+
+
+## ❤️ Support
+
+| Donate | PayPal | Stripe |
+| --- | --- | --- |
+| [![Donate](https://camo.githubusercontent.com/24a4914f0b42c6f435f9e101621f1e52535b02c225764b2f6cc99416926004b7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446f6e6174652d4c617a79696e674172742d3045413545393f7374796c653d666f722d7468652d6261646765266c6f676f3d6b6f2d6669266c6f676f436f6c6f723d7768697465)](https://chat.lazying.art/donate) | [![PayPal](https://camo.githubusercontent.com/d0f57e8b016517a4b06961b24d0ca87d62fdba16e18bbdb6aba28e978dc0ea21/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f50617950616c2d526f6e677a686f754368656e2d3030343537433f7374796c653d666f722d7468652d6261646765266c6f676f3d70617970616c266c6f676f436f6c6f723d7768697465)](https://paypal.me/RongzhouChen) | [![Stripe](https://camo.githubusercontent.com/1152dfe04b6943afe3a8d2953676749603fb9f95e24088c92c97a01a897b4942/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5374726970652d446f6e6174652d3633354246463f7374796c653d666f722d7468652d6261646765266c6f676f3d737472697065266c6f676f436f6c6f723d7768697465)](https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400) |
